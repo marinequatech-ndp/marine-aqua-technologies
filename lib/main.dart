@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:video_player/video_player.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -1009,11 +1010,22 @@ class HomeCard extends StatelessWidget {
 class SuccessStoriesSection extends StatelessWidget {
   const SuccessStoriesSection({super.key});
 
-  static const List<String> stories = [
-    'assets/success_stories/story1.jpg',
-    'assets/success_stories/story2.jpg',
-    'assets/success_stories/story3.jpg',
-    'assets/success_stories/story4.jpg',
+  static const List<Map<String, String>> videos = [
+    {
+      'title': 'Success Story 1',
+      'video': 'assets/success_stories/success_story_1.mp4',
+      'thumb': 'assets/success_stories/thumbs/story1.jpg',
+    },
+    {
+      'title': 'Success Story 2',
+      'video': 'assets/success_stories/success_story_2.mp4',
+      'thumb': 'assets/success_stories/thumbs/story2.jpg',
+    },
+    {
+      'title': 'Marine Aqua Story',
+      'video': 'assets/success_stories/success_story_3.mp4',
+      'thumb': 'assets/success_stories/thumbs/story3.jpg',
+    },
   ];
 
   @override
@@ -1034,7 +1046,7 @@ class SuccessStoriesSection extends StatelessWidget {
               ),
             ),
             const Text(
-              'మరిన్ని చూడండి →',
+              'వీడియోస్ →',
               style: TextStyle(
                 color: Color(0xFF0877AC),
                 fontSize: 13,
@@ -1045,56 +1057,221 @@ class SuccessStoriesSection extends StatelessWidget {
         ),
         const SizedBox(height: 10),
         SizedBox(
-          height: 190,
+          height: 205,
           child: ListView.separated(
             scrollDirection: Axis.horizontal,
             physics: const BouncingScrollPhysics(),
-            itemCount: stories.length,
+            itemCount: videos.length,
             separatorBuilder: (_, __) => const SizedBox(width: 12),
             itemBuilder: (context, index) {
-              return Container(
-                width: 275,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(22),
-                  border: Border.all(
-                    color: const Color(0xFFE0EEF5),
-                  ),
-                ),
-                clipBehavior: Clip.antiAlias,
-                child: Image.asset(
-                  stories[index],
-                  fit: BoxFit.cover,
-                  errorBuilder: (_, __, ___) {
-                    return Container(
-                      color: const Color(0xFFEAF7FC),
-                      alignment: Alignment.center,
-                      child: const Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.photo_library_outlined,
-                            size: 48,
-                            color: Color(0xFF0B79B2),
-                          ),
-                          SizedBox(height: 8),
-                          Text(
-                            'Success Story',
-                            style: TextStyle(
-                              color: Color(0xFF075078),
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ],
-                      ),
-                    );
-                  },
-                ),
+              final item = videos[index];
+              return _SuccessVideoCard(
+                title: item['title']!,
+                videoPath: item['video']!,
+                thumbnailPath: item['thumb']!,
               );
             },
           ),
         ),
       ],
+    );
+  }
+}
+
+class _SuccessVideoCard extends StatelessWidget {
+  final String title;
+  final String videoPath;
+  final String thumbnailPath;
+
+  const _SuccessVideoCard({
+    required this.title,
+    required this.videoPath,
+    required this.thumbnailPath,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => VideoPlayerScreen(
+              title: title,
+              videoPath: videoPath,
+            ),
+          ),
+        );
+      },
+      child: Container(
+        width: 285,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(22),
+          border: Border.all(
+            color: const Color(0xFFE0EEF5),
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 8,
+              offset: const Offset(0, 3),
+            ),
+          ],
+        ),
+        clipBehavior: Clip.antiAlias,
+        child: Column(
+          children: [
+            Expanded(
+              child: Stack(
+                fit: StackFit.expand,
+                children: [
+                  Image.asset(
+                    thumbnailPath,
+                    fit: BoxFit.cover,
+                  ),
+                  Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [
+                          Colors.transparent,
+                          Colors.black.withOpacity(0.35),
+                        ],
+                      ),
+                    ),
+                  ),
+                  Center(
+                    child: Container(
+                      width: 54,
+                      height: 54,
+                      decoration: const BoxDecoration(
+                        color: Colors.white,
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(
+                        Icons.play_arrow,
+                        size: 34,
+                        color: Color(0xFF075985),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 13,
+                vertical: 10,
+              ),
+              child: Row(
+                children: [
+                  const Icon(
+                    Icons.play_circle_outline,
+                    color: Color(0xFF087DB5),
+                    size: 21,
+                  ),
+                  const SizedBox(width: 7),
+                  Expanded(
+                    child: Text(
+                      title,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        color: Color(0xFF075078),
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class VideoPlayerScreen extends StatefulWidget {
+  final String title;
+  final String videoPath;
+
+  const VideoPlayerScreen({
+    super.key,
+    required this.title,
+    required this.videoPath,
+  });
+
+  @override
+  State<VideoPlayerScreen> createState() => _VideoPlayerScreenState();
+}
+
+class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
+  late final VideoPlayerController _controller;
+  bool _ready = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = VideoPlayerController.asset(widget.videoPath)
+      ..initialize().then((_) {
+        if (!mounted) return;
+        setState(() => _ready = true);
+      });
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.black,
+      appBar: AppBar(
+        backgroundColor: Colors.black,
+        foregroundColor: Colors.white,
+        title: Text(widget.title),
+      ),
+      body: Center(
+        child: _ready
+            ? Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  AspectRatio(
+                    aspectRatio: _controller.value.aspectRatio,
+                    child: VideoPlayer(_controller),
+                  ),
+                  const SizedBox(height: 18),
+                  IconButton(
+                    onPressed: () {
+                      setState(() {
+                        if (_controller.value.isPlaying) {
+                          _controller.pause();
+                        } else {
+                          _controller.play();
+                        }
+                      });
+                    },
+                    iconSize: 52,
+                    color: Colors.white,
+                    icon: Icon(
+                      _controller.value.isPlaying
+                          ? Icons.pause_circle_filled
+                          : Icons.play_circle_fill,
+                    ),
+                  ),
+                ],
+              )
+            : const CircularProgressIndicator(
+                color: Colors.white,
+              ),
+      ),
     );
   }
 }
