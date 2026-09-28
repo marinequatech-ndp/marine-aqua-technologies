@@ -1,14 +1,22 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 
-void main() async {
+void main() {
   WidgetsFlutterBinding.ensureInitialized();
-
-  await Firebase.initializeApp();
-
   runApp(const MarineAquaApp());
 }
+
+// ============================================================
+// COLORS
+// ============================================================
+
+const Color marineBlue = Color(0xFF075985);
+const Color marineBlueDark = Color(0xFF064E7A);
+const Color marineCyan = Color(0xFF129BCB);
+const Color pageBg = Color(0xFFF4FAFD);
+
+// ============================================================
+// APP
+// ============================================================
 
 class MarineAquaApp extends StatelessWidget {
   const MarineAquaApp({super.key});
@@ -20,460 +28,63 @@ class MarineAquaApp extends StatelessWidget {
       title: 'Marine Aqua Technologies',
       theme: ThemeData(
         useMaterial3: true,
-        fontFamily: 'Roboto',
+        scaffoldBackgroundColor: pageBg,
         colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFF0879A8),
+          seedColor: marineBlue,
         ),
       ),
-      home: const AuthGate(),
+      home: const SplashScreen(),
     );
   }
 }
 
 // ============================================================
-// AUTH GATE
+// SPLASH SCREEN
 // ============================================================
 
-class AuthGate extends StatelessWidget {
-  const AuthGate({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return StreamBuilder<User?>(
-      stream: FirebaseAuth.instance.authStateChanges(),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const SplashScreen();
-        }
-
-        if (snapshot.hasData) {
-          return const MainNavigation();
-        }
-
-        return const LoginPage();
-      },
-    );
-  }
-}
-
-// ============================================================
-// SPLASH
-// ============================================================
-
-class SplashScreen extends StatelessWidget {
+class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFFF5FBFE),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Image.asset(
-              'assets/logo.png',
-              width: 130,
-              height: 130,
-              fit: BoxFit.contain,
-              errorBuilder: (_, __, ___) {
-                return const Icon(
-                  Icons.water_drop,
-                  size: 90,
-                  color: Color(0xFF0879A8),
-                );
-              },
-            ),
-            const SizedBox(height: 20),
-            const Text(
-              'MARINE AQUA\nTECHNOLOGIES',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: Color(0xFF075B80),
-              ),
-            ),
-            const SizedBox(height: 8),
-            const Text(
-              'Smart Aquaculture. Better Results.',
-              style: TextStyle(
-                color: Colors.grey,
-                fontSize: 14,
-              ),
-            ),
-            const SizedBox(height: 30),
-            const CircularProgressIndicator(
-              color: Color(0xFF0879A8),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
+  State<SplashScreen> createState() => _SplashScreenState();
 }
 
-// ============================================================
-// LOGIN PAGE
-// ============================================================
-
-class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
-
+class _SplashScreenState extends State<SplashScreen> {
   @override
-  State<LoginPage> createState() => _LoginPageState();
-}
+  void initState() {
+    super.initState();
 
-class _LoginPageState extends State<LoginPage> {
-  final TextEditingController phoneController = TextEditingController();
+    Future.delayed(const Duration(seconds: 2), () {
+      if (!mounted) return;
 
-  bool loading = false;
-
-  Future<void> sendOTP() async {
-    final phone = phoneController.text.trim();
-
-    if (phone.length != 10) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please enter a valid 10 digit mobile number'),
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (_) => const LoginScreen(),
         ),
       );
-      return;
-    }
-
-    setState(() {
-      loading = true;
     });
-
-    try {
-      await FirebaseAuth.instance.verifyPhoneNumber(
-        phoneNumber: '+91$phone',
-
-        verificationCompleted: (PhoneAuthCredential credential) async {
-          await FirebaseAuth.instance.signInWithCredential(credential);
-        },
-
-        verificationFailed: (FirebaseAuthException e) {
-          if (!mounted) return;
-
-          setState(() {
-            loading = false;
-          });
-
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                e.message ?? 'OTP verification failed',
-              ),
-            ),
-          );
-        },
-
-        codeSent: (String verificationId, int? resendToken) {
-          if (!mounted) return;
-
-          setState(() {
-            loading = false;
-          });
-
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (_) => OTPPage(
-                verificationId: verificationId,
-                phoneNumber: phone,
-              ),
-            ),
-          );
-        },
-
-        codeAutoRetrievalTimeout: (String verificationId) {
-          if (mounted) {
-            setState(() {
-              loading = false;
-            });
-          }
-        },
-      );
-    } catch (e) {
-      setState(() {
-        loading = false;
-      });
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(e.toString()),
-        ),
-      );
-    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF4FBFE),
+      backgroundColor: Colors.white,
       body: SafeArea(
         child: Center(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 28,
-              vertical: 30,
-            ),
-            child: Column(
-              children: [
-                Image.asset(
-                  'assets/logo.png',
-                  width: 130,
-                  height: 130,
-                  fit: BoxFit.contain,
-                  errorBuilder: (_, __, ___) {
-                    return const Icon(
-                      Icons.water_drop,
-                      size: 100,
-                      color: Color(0xFF0879A8),
-                    );
-                  },
-                ),
-
-                const SizedBox(height: 20),
-
-                const Text(
-                  'MARINE AQUA',
-                  style: TextStyle(
-                    fontSize: 30,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF075B80),
-                  ),
-                ),
-
-                const Text(
-                  'TECHNOLOGIES',
-                  style: TextStyle(
-                    fontSize: 28,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF075B80),
-                  ),
-                ),
-
-                const SizedBox(height: 8),
-
-                const Text(
-                  'ఆక్వా సాగులో ప్రతి దశలో... మీకు తోడుగా',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 15,
-                    color: Color(0xFF075B80),
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-
-                const SizedBox(height: 6),
-
-                const Text(
-                  'Smart Aquaculture. Better Results.',
-                  style: TextStyle(
-                    color: Colors.grey,
-                  ),
-                ),
-
-                const SizedBox(height: 45),
-
-                Container(
-                  padding: const EdgeInsets.all(22),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(24),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.08),
-                        blurRadius: 20,
-                        offset: const Offset(0, 8),
-                      ),
-                    ],
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        'Welcome Back',
-                        style: TextStyle(
-                          fontSize: 25,
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xFF075B80),
-                        ),
-                      ),
-
-                      const SizedBox(height: 8),
-
-                      const Text(
-                        'Login with your mobile number',
-                        style: TextStyle(
-                          color: Colors.grey,
-                        ),
-                      ),
-
-                      const SizedBox(height: 25),
-
-                      TextField(
-                        controller: phoneController,
-                        keyboardType: TextInputType.phone,
-                        maxLength: 10,
-                        decoration: InputDecoration(
-                          counterText: '',
-                          prefixIcon: const Icon(
-                            Icons.phone_android,
-                            color: Color(0xFF0879A8),
-                          ),
-                          prefixText: '+91  ',
-                          labelText: 'Mobile Number',
-                          hintText: 'Enter mobile number',
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(15),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(15),
-                            borderSide: const BorderSide(
-                              color: Color(0xFF0879A8),
-                              width: 2,
-                            ),
-                          ),
-                        ),
-                      ),
-
-                      const SizedBox(height: 20),
-
-                      SizedBox(
-                        width: double.infinity,
-                        height: 55,
-                        child: ElevatedButton(
-                          onPressed: loading ? null : sendOTP,
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFF0879A8),
-                            foregroundColor: Colors.white,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(15),
-                            ),
-                          ),
-                          child: loading
-                              ? const SizedBox(
-                                  width: 23,
-                                  height: 23,
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 2,
-                                    color: Colors.white,
-                                  ),
-                                )
-                              : const Text(
-                                  'SEND OTP',
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-// ============================================================
-// OTP PAGE
-// ============================================================
-
-class OTPPage extends StatefulWidget {
-  final String verificationId;
-  final String phoneNumber;
-
-  const OTPPage({
-    super.key,
-    required this.verificationId,
-    required this.phoneNumber,
-  });
-
-  @override
-  State<OTPPage> createState() => _OTPPageState();
-}
-
-class _OTPPageState extends State<OTPPage> {
-  final TextEditingController otpController = TextEditingController();
-
-  bool loading = false;
-
-  Future<void> verifyOTP() async {
-    final otp = otpController.text.trim();
-
-    if (otp.length != 6) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Enter 6 digit OTP'),
-        ),
-      );
-      return;
-    }
-
-    setState(() {
-      loading = true;
-    });
-
-    try {
-      final credential = PhoneAuthProvider.credential(
-        verificationId: widget.verificationId,
-        smsCode: otp,
-      );
-
-      await FirebaseAuth.instance.signInWithCredential(
-        credential,
-      );
-    } on FirebaseAuthException catch (e) {
-      setState(() {
-        loading = false;
-      });
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            e.message ?? 'Invalid OTP',
-          ),
-        ),
-      );
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFFF4FBFE),
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        iconTheme: const IconThemeData(
-          color: Color(0xFF075B80),
-        ),
-      ),
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(28),
           child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const SizedBox(height: 30),
-
               Image.asset(
                 'assets/logo.png',
-                width: 100,
-                height: 100,
+                width: 180,
+                height: 180,
+                fit: BoxFit.contain,
                 errorBuilder: (_, __, ___) {
                   return const Icon(
                     Icons.water_drop,
-                    size: 80,
-                    color: Color(0xFF0879A8),
+                    size: 120,
+                    color: marineCyan,
                   );
                 },
               ),
@@ -481,21 +92,393 @@ class _OTPPageState extends State<OTPPage> {
               const SizedBox(height: 25),
 
               const Text(
+                'ఆక్వా సాగులో ప్రతి దశలో... మీకు తోడుగా',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: marineBlueDark,
+                ),
+              ),
+
+              const SizedBox(height: 12),
+
+              const Text(
+                'Marine Aqua Technologies',
+                style: TextStyle(
+                  fontSize: 19,
+                  color: marineBlue,
+                ),
+              ),
+
+              const SizedBox(height: 35),
+
+              const CircularProgressIndicator(
+                color: marineCyan,
+                strokeWidth: 3,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// ============================================================
+// LOGIN SCREEN
+// ============================================================
+
+class LoginScreen extends StatefulWidget {
+  const LoginScreen({super.key});
+
+  @override
+  State<LoginScreen> createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> {
+  final TextEditingController mobileController =
+      TextEditingController();
+
+  bool get isValidMobile =>
+      mobileController.text.trim().length == 10;
+
+  @override
+  void dispose() {
+    mobileController.dispose();
+    super.dispose();
+  }
+
+  void sendOtp() {
+    if (!isValidMobile) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'దయచేసి 10-digit mobile number నమోదు చేయండి',
+          ),
+        ),
+      );
+      return;
+    }
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => OtpScreen(
+          mobileNumber: mobileController.text.trim(),
+        ),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(
+            horizontal: 28,
+            vertical: 24,
+          ),
+          child: Column(
+            children: [
+              const SizedBox(height: 15),
+
+              Image.asset(
+                'assets/logo.png',
+                width: 145,
+                height: 145,
+                fit: BoxFit.contain,
+              ),
+
+              const SizedBox(height: 15),
+
+              const Text(
+                'ఆక్వా సాగులో ప్రతి దశలో... మీకు తోడుగా',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: marineBlueDark,
+                ),
+              ),
+
+              const SizedBox(height: 8),
+
+              const Text(
+                'Marine Aqua Technologies',
+                style: TextStyle(
+                  fontSize: 18,
+                  color: marineBlue,
+                ),
+              ),
+
+              const SizedBox(height: 55),
+
+              const Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  'Enter Your Mobile Number',
+                  style: TextStyle(
+                    fontSize: 27,
+                    fontWeight: FontWeight.bold,
+                    color: marineBlueDark,
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 10),
+
+              const Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  'We will send a 6-digit OTP to verify\nyour mobile number.',
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: Colors.grey,
+                    height: 1.4,
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 25),
+
+              TextField(
+                controller: mobileController,
+                keyboardType: TextInputType.phone,
+                maxLength: 10,
+                onChanged: (_) {
+                  setState(() {});
+                },
+                decoration: InputDecoration(
+                  counterText: '',
+                  hintText: 'Enter 10-digit number',
+                  prefixIcon: const Icon(
+                    Icons.phone_android,
+                    color: marineCyan,
+                  ),
+                  filled: true,
+                  fillColor: const Color(0xFFF8FCFE),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(18),
+                    borderSide: const BorderSide(
+                      color: Color(0xFFB7E3EF),
+                      width: 1.5,
+                    ),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(18),
+                    borderSide: const BorderSide(
+                      color: marineCyan,
+                      width: 2,
+                    ),
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 18),
+
+              SizedBox(
+                width: double.infinity,
+                height: 56,
+                child: ElevatedButton(
+                  onPressed: isValidMobile ? sendOtp : null,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: marineCyan,
+                    disabledBackgroundColor: Colors.grey.shade300,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                  ),
+                  child: const Text(
+                    'Send OTP  →',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 55),
+
+              const Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  LoginFeature(
+                    icon: Icons.verified_user,
+                    title: 'Secure\nLogin',
+                  ),
+                  LoginFeature(
+                    icon: Icons.eco,
+                    title: 'Trusted by\nAqua Farmers',
+                  ),
+                  LoginFeature(
+                    icon: Icons.groups,
+                    title: 'Better\nTogether',
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// ============================================================
+// LOGIN FEATURE
+// ============================================================
+
+class LoginFeature extends StatelessWidget {
+  final IconData icon;
+  final String title;
+
+  const LoginFeature({
+    super.key,
+    required this.icon,
+    required this.title,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Icon(
+          icon,
+          size: 38,
+          color: marineCyan,
+        ),
+        const SizedBox(height: 8),
+        Text(
+          title,
+          textAlign: TextAlign.center,
+          style: const TextStyle(
+            fontSize: 13,
+            color: Colors.grey,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+// ============================================================
+// OTP SCREEN
+// ============================================================
+
+class OtpScreen extends StatefulWidget {
+  final String mobileNumber;
+
+  const OtpScreen({
+    super.key,
+    required this.mobileNumber,
+  });
+
+  @override
+  State<OtpScreen> createState() => _OtpScreenState();
+}
+
+class _OtpScreenState extends State<OtpScreen> {
+  final TextEditingController otpController =
+      TextEditingController();
+
+  bool get isValidOtp =>
+      otpController.text.trim().length == 6;
+
+  @override
+  void dispose() {
+    otpController.dispose();
+    super.dispose();
+  }
+
+  void verifyOtp() {
+    if (!isValidOtp) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('6-digit OTP నమోదు చేయండి'),
+        ),
+      );
+      return;
+    }
+
+    // DEMO OTP
+    if (otpController.text.trim() != '123456') {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Demo OTP: 123456'),
+        ),
+      );
+      return;
+    }
+
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(
+        builder: (_) => const MainNavigationScreen(),
+      ),
+      (route) => false,
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(
+            horizontal: 28,
+            vertical: 20,
+          ),
+          child: Column(
+            children: [
+              Align(
+                alignment: Alignment.centerLeft,
+                child: IconButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  icon: const Icon(
+                    Icons.arrow_back,
+                    size: 30,
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 5),
+
+              Image.asset(
+                'assets/logo.png',
+                width: 120,
+                height: 120,
+                fit: BoxFit.contain,
+              ),
+
+              const SizedBox(height: 18),
+
+              const Text(
                 'Verify OTP',
                 style: TextStyle(
                   fontSize: 30,
                   fontWeight: FontWeight.bold,
-                  color: Color(0xFF075B80),
+                  color: marineBlueDark,
                 ),
               ),
 
               const SizedBox(height: 10),
 
               Text(
-                'OTP sent to +91 ${widget.phoneNumber}',
+                'Enter the 6-digit OTP sent to\n'
+                '+91 ${widget.mobileNumber}',
                 textAlign: TextAlign.center,
                 style: const TextStyle(
+                  fontSize: 16,
                   color: Colors.grey,
+                  height: 1.4,
                 ),
               ),
 
@@ -508,43 +491,85 @@ class _OTPPageState extends State<OTPPage> {
                 textAlign: TextAlign.center,
                 style: const TextStyle(
                   fontSize: 25,
-                  letterSpacing: 12,
+                  letterSpacing: 8,
                   fontWeight: FontWeight.bold,
                 ),
+                onChanged: (_) {
+                  setState(() {});
+                },
                 decoration: InputDecoration(
                   counterText: '',
-                  hintText: '------',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(16),
+                  hintText: 'Enter 6-digit OTP',
+                  filled: true,
+                  fillColor: const Color(0xFFF8FCFE),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(18),
+                    borderSide: const BorderSide(
+                      color: Color(0xFFB7E3EF),
+                    ),
                   ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(18),
+                    borderSide: const BorderSide(
+                      color: marineCyan,
+                      width: 2,
+                    ),
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 18),
+
+              SizedBox(
+                width: double.infinity,
+                height: 56,
+                child: ElevatedButton(
+                  onPressed: isValidOtp ? verifyOtp : null,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: marineCyan,
+                    disabledBackgroundColor: Colors.grey.shade300,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                  ),
+                  child: const Text(
+                    'Verify OTP  →',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 35),
+
+              const Text(
+                'Demo OTP: 123456',
+                style: TextStyle(
+                  color: Colors.grey,
+                  fontSize: 13,
                 ),
               ),
 
               const SizedBox(height: 25),
 
-              SizedBox(
-                width: double.infinity,
-                height: 55,
-                child: ElevatedButton(
-                  onPressed: loading ? null : verifyOTP,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF0879A8),
-                    foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(15),
+              TextButton(
+                onPressed: () {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('OTP resend requested'),
                     ),
+                  );
+                },
+                child: const Text(
+                  'Resend OTP',
+                  style: TextStyle(
+                    fontSize: 17,
+                    fontWeight: FontWeight.bold,
+                    color: marineCyan,
                   ),
-                  child: loading
-                      ? const CircularProgressIndicator(
-                          color: Colors.white,
-                        )
-                      : const Text(
-                          'VERIFY OTP',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16,
-                          ),
-                        ),
                 ),
               ),
             ],
@@ -559,37 +584,39 @@ class _OTPPageState extends State<OTPPage> {
 // MAIN NAVIGATION
 // ============================================================
 
-class MainNavigation extends StatefulWidget {
-  const MainNavigation({super.key});
+class MainNavigationScreen extends StatefulWidget {
+  const MainNavigationScreen({super.key});
 
   @override
-  State<MainNavigation> createState() => _MainNavigationState();
+  State<MainNavigationScreen> createState() =>
+      _MainNavigationScreenState();
 }
 
-class _MainNavigationState extends State<MainNavigation> {
-  int selectedIndex = 0;
+class _MainNavigationScreenState
+    extends State<MainNavigationScreen> {
+  int currentIndex = 0;
 
-  final pages = const [
-    HomePage(),
-    ProductsPage(),
-    SupportPage(),
+  final List<Widget> pages = const [
+    HomeScreen(),
+    ProductsScreen(),
+    SupportScreen(),
   ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: IndexedStack(
-        index: selectedIndex,
+        index: currentIndex,
         children: pages,
       ),
-
       bottomNavigationBar: NavigationBar(
-        selectedIndex: selectedIndex,
+        height: 75,
+        selectedIndex: currentIndex,
         backgroundColor: Colors.white,
-        indicatorColor: const Color(0xFFD8F2FB),
+        indicatorColor: const Color(0xFFD9F3FC),
         onDestinationSelected: (index) {
           setState(() {
-            selectedIndex = index;
+            currentIndex = index;
           });
         },
         destinations: const [
@@ -615,254 +642,57 @@ class _MainNavigationState extends State<MainNavigation> {
 }
 
 // ============================================================
-// HOME PAGE
+// HOME SCREEN
 // ============================================================
 
-class HomePage extends StatelessWidget {
-  const HomePage({super.key});
+class HomeScreen extends StatelessWidget {
+  const HomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF4FBFE),
+      backgroundColor: pageBg,
       body: SafeArea(
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              // HEADER
-              Container(
-                width: double.infinity,
-                color: Colors.white,
-                padding: const EdgeInsets.fromLTRB(
-                  18,
-                  15,
-                  18,
-                  18,
-                ),
-                child: Row(
-                  children: [
-                    Image.asset(
-                      'assets/logo.png',
-                      width: 80,
-                      height: 80,
-                      fit: BoxFit.contain,
-                      errorBuilder: (_, __, ___) {
-                        return const Icon(
-                          Icons.water_drop,
-                          size: 55,
-                          color: Color(0xFF0879A8),
-                        );
-                      },
-                    ),
+        child: CustomScrollView(
+          slivers: [
+            const SliverToBoxAdapter(
+              child: HomeHeader(),
+            ),
 
-                    const SizedBox(width: 12),
+            SliverPadding(
+              padding: const EdgeInsets.fromLTRB(
+                16,
+                12,
+                16,
+                30,
+              ),
+              sliver: SliverList(
+                delegate: SliverChildListDelegate(
+                  [
+                    const HeroBanner(),
 
-                    const Expanded(
-                      child: Column(
-                        crossAxisAlignment:
-                            CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'MARINE AQUA',
-                            style: TextStyle(
-                              fontSize: 27,
-                              fontWeight: FontWeight.bold,
-                              color: Color(0xFF075B80),
-                            ),
-                          ),
-                          Text(
-                            'TECHNOLOGIES',
-                            style: TextStyle(
-                              fontSize: 25,
-                              fontWeight: FontWeight.bold,
-                              color: Color(0xFF075B80),
-                            ),
-                          ),
-                          SizedBox(height: 5),
-                          Text(
-                            'ఆక్వా సాగులో ప్రతి దశలో... మీకు తోడుగా',
-                            style: TextStyle(
-                              fontSize: 11,
-                              color: Color(0xFF075B80),
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          SizedBox(height: 3),
-                          Text(
-                            'Smart Aquaculture. Better Results.',
-                            style: TextStyle(
-                              fontSize: 11,
-                              color: Colors.grey,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
+                    const SizedBox(height: 20),
 
-                    const Icon(
-                      Icons.notifications_none,
-                      size: 32,
-                      color: Color(0xFF075B80),
-                    ),
+                    const QuickActionsTitle(),
+
+                    const SizedBox(height: 12),
+
+                    const QuickActions(),
+
+                    const SizedBox(height: 22),
+
+                    const WaterQualitySection(),
+
+                    const SizedBox(height: 22),
+
+                    const ProblemsSection(),
+
+                    const SizedBox(height: 20),
                   ],
                 ),
               ),
-
-              const SizedBox(height: 14),
-
-              // =================================================
-              // HERO BANNER
-              // =================================================
-
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 18,
-                ),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(25),
-                  child: AspectRatio(
-                    aspectRatio: 16 / 8,
-                    child: Image.asset(
-                      'assets/hero_banner.png',
-                      fit: BoxFit.cover,
-                      errorBuilder: (_, __, ___) {
-                        return Container(
-                          decoration: BoxDecoration(
-                            gradient: const LinearGradient(
-                              colors: [
-                                Color(0xFF30363B),
-                                Color(0xFFDDE2E5),
-                              ],
-                            ),
-                            borderRadius:
-                                BorderRadius.circular(25),
-                          ),
-                          padding: const EdgeInsets.all(25),
-                          child: const Column(
-                            crossAxisAlignment:
-                                CrossAxisAlignment.start,
-                            mainAxisAlignment:
-                                MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                'ఆరోగ్యకరమైన\nచెరువులు',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 30,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              SizedBox(height: 10),
-                              Text(
-                                'బలమైన రొయ్యలు',
-                                style: TextStyle(
-                                  color: Colors.yellow,
-                                  fontSize: 27,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              Text(
-                                'అధిక లాభాలు',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 27,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ],
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-                ),
-              ),
-
-              const SizedBox(height: 22),
-
-              // =================================================
-              // 3 CARDS TITLE
-              // =================================================
-
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 22,
-                ),
-                child: Row(
-                  children: [
-                    const Expanded(
-                      child: Text(
-                        'ఆక్వా సమాచారం',
-                        style: TextStyle(
-                          fontSize: 25,
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xFF075B80),
-                        ),
-                      ),
-                    ),
-                    const Icon(
-                      Icons.arrow_forward,
-                      color: Color(0xFF0879A8),
-                      size: 30,
-                    ),
-                  ],
-                ),
-              ),
-
-              const SizedBox(height: 14),
-
-              // =================================================
-              // 3 IMAGE CARDS
-              // =================================================
-
-              SizedBox(
-                height: 210,
-                child: ListView(
-                  scrollDirection: Axis.horizontal,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 18,
-                  ),
-                  children: const [
-                    AquaInfoCard(
-                      image:
-                          'assets/shortcut_card_1_royyala_sagu_guide.png',
-                      title: 'రొయ్యల సాగు గైడ్',
-                    ),
-
-                    AquaInfoCard(
-                      image:
-                          'assets/shortcut_card_2_biomass_calculator.png',
-                      title: 'బయోమాస్ కాలిక్యులేటర్',
-                    ),
-
-                    AquaInfoCard(
-                      image:
-                          'assets/shortcut_card_3_royyala_vyadhulu.png',
-                      title: 'రొయ్యల వ్యాధులు',
-                    ),
-                  ],
-                ),
-              ),
-
-              const SizedBox(height: 22),
-
-              // =================================================
-              // WATER PARAMETERS
-              // =================================================
-
-              const WaterParameters(),
-
-              const SizedBox(height: 22),
-
-              // =================================================
-              // PROBLEMS
-              // =================================================
-
-              const ProblemsSection(),
-
-              const SizedBox(height: 30),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
@@ -870,71 +700,99 @@ class HomePage extends StatelessWidget {
 }
 
 // ============================================================
-// AQUA INFO CARD
+// HOME HEADER
 // ============================================================
 
-class AquaInfoCard extends StatelessWidget {
-  final String image;
-  final String title;
-
-  const AquaInfoCard({
-    super.key,
-    required this.image,
-    required this.title,
-  });
+class HomeHeader extends StatelessWidget {
+  const HomeHeader({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 185,
-      margin: const EdgeInsets.only(right: 14),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(22),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.07),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
+      color: Colors.white,
+      padding: const EdgeInsets.fromLTRB(
+        16,
+        12,
+        12,
+        12,
       ),
-      clipBehavior: Clip.antiAlias,
-      child: Column(
+      child: Row(
         children: [
-          Expanded(
-            child: Image.asset(
-              image,
-              width: double.infinity,
-              fit: BoxFit.cover,
-              errorBuilder: (_, __, ___) {
-                return Container(
-                  color: const Color(0xFFEAF7FB),
-                  child: const Center(
-                    child: Icon(
-                      Icons.image_not_supported_outlined,
-                      size: 55,
-                      color: Colors.grey,
-                    ),
+          Image.asset(
+            'assets/logo.png',
+            width: 58,
+            height: 58,
+            fit: BoxFit.contain,
+          ),
+
+          const SizedBox(width: 10),
+
+          const Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'MARINE AQUA',
+                  style: TextStyle(
+                    fontSize: 21,
+                    fontWeight: FontWeight.bold,
+                    color: marineBlueDark,
+                    letterSpacing: 0.3,
                   ),
-                );
-              },
+                ),
+
+                Text(
+                  'TECHNOLOGIES',
+                  style: TextStyle(
+                    fontSize: 21,
+                    fontWeight: FontWeight.bold,
+                    color: marineBlueDark,
+                    letterSpacing: 0.3,
+                  ),
+                ),
+
+                SizedBox(height: 3),
+
+                Text(
+                  'ఆక్వా సాగులో ప్రతి దశలో... మీకు తోడుగా',
+                  style: TextStyle(
+                    fontSize: 9.5,
+                    fontWeight: FontWeight.bold,
+                    color: marineBlueDark,
+                  ),
+                ),
+
+                SizedBox(height: 2),
+
+                Text(
+                  'Smart Aquaculture. Better Results.',
+                  style: TextStyle(
+                    fontSize: 10,
+                    color: Colors.grey,
+                  ),
+                ),
+              ],
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 8,
-              vertical: 10,
-            ),
-            child: Text(
-              title,
-              textAlign: TextAlign.center,
-              maxLines: 2,
-              style: const TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.bold,
-                color: Color(0xFF075B80),
-              ),
+
+          IconButton(
+            onPressed: () {
+              showDialog(
+                context: context,
+                builder: (_) {
+                  return const AlertDialog(
+                    title: Text('Notifications'),
+                    content: Text(
+                      'ప్రస్తుతం కొత్త notifications ఏమీ లేవు.',
+                    ),
+                  );
+                },
+              );
+            },
+            icon: const Icon(
+              Icons.notifications_none,
+              size: 30,
+              color: marineBlueDark,
             ),
           ),
         ],
@@ -944,24 +802,180 @@ class AquaInfoCard extends StatelessWidget {
 }
 
 // ============================================================
-// WATER PARAMETERS
+// HERO BANNER
 // ============================================================
 
-class WaterParameters extends StatelessWidget {
-  const WaterParameters({super.key});
+class HeroBanner extends StatelessWidget {
+  const HeroBanner({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(24),
+      child: SizedBox(
+        width: double.infinity,
+        height: 265,
+        child: Image.asset(
+          'assets/hero_banner.png',
+          fit: BoxFit.cover,
+          errorBuilder: (_, __, ___) {
+            return Container(
+              color: Colors.grey.shade300,
+              alignment: Alignment.center,
+              child: const Text(
+                'Hero Banner Image Not Found',
+                style: TextStyle(
+                  color: Colors.grey,
+                  fontSize: 16,
+                ),
+              ),
+            );
+          },
+        ),
+      ),
+    );
+  }
+}
+
+// ============================================================
+// QUICK ACTIONS TITLE
+// ============================================================
+
+class QuickActionsTitle extends StatelessWidget {
+  const QuickActionsTitle({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        const Expanded(
+          child: Text(
+            'ఆక్వా సమాచారం',
+            style: TextStyle(
+              fontSize: 26,
+              fontWeight: FontWeight.bold,
+              color: marineBlueDark,
+            ),
+          ),
+        ),
+
+        Icon(
+          Icons.arrow_forward,
+          size: 30,
+          color: marineCyan,
+        ),
+      ],
+    );
+  }
+}
+
+// ============================================================
+// QUICK ACTIONS - 3 IMAGE CARDS
+// ============================================================
+
+class QuickActions extends StatelessWidget {
+  const QuickActions({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 170,
+      child: ListView(
+        scrollDirection: Axis.horizontal,
+        physics: const BouncingScrollPhysics(),
+        children: const [
+          QuickImageCard(
+            image:
+                'assets/shortcut_card_1_royyala_sagu_guide.png',
+          ),
+
+          SizedBox(width: 12),
+
+          QuickImageCard(
+            image:
+                'assets/shortcut_card_2_biomass_calculator.png',
+          ),
+
+          SizedBox(width: 12),
+
+          QuickImageCard(
+            image:
+                'assets/shortcut_card_3_royyala_vyadhulu.png',
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ============================================================
+// QUICK IMAGE CARD
+// ============================================================
+
+class QuickImageCard extends StatelessWidget {
+  final String image;
+
+  const QuickImageCard({
+    super.key,
+    required this.image,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.symmetric(
-        horizontal: 18,
-      ),
-      padding: const EdgeInsets.all(18),
+      width: 205,
       decoration: BoxDecoration(
-        color: const Color(0xFFE8F8FD),
-        borderRadius: BorderRadius.circular(25),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.06),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      clipBehavior: Clip.antiAlias,
+      child: Image.asset(
+        image,
+        fit: BoxFit.cover,
+        errorBuilder: (_, __, ___) {
+          return Container(
+            color: Colors.white,
+            alignment: Alignment.center,
+            child: const Icon(
+              Icons.image_not_supported_outlined,
+              size: 50,
+              color: Colors.grey,
+            ),
+          );
+        },
+      ),
+    );
+  }
+}
+
+// ============================================================
+// WATER QUALITY SECTION
+// ============================================================
+
+class WaterQualitySection extends StatelessWidget {
+  const WaterQualitySection({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.fromLTRB(
+        16,
+        18,
+        16,
+        18,
+      ),
+      decoration: BoxDecoration(
+        color: const Color(0xFFE9F8FD),
+        borderRadius: BorderRadius.circular(24),
         border: Border.all(
-          color: const Color(0xFFB9E8F6),
+          color: const Color(0xFFB7E3EF),
           width: 1.5,
         ),
       ),
@@ -973,17 +987,19 @@ class WaterParameters extends StatelessWidget {
                 child: Text(
                   'చెరువు నీటి పరిస్థితులు',
                   style: TextStyle(
-                    fontSize: 24,
+                    fontSize: 25,
                     fontWeight: FontWeight.bold,
-                    color: Color(0xFF075B80),
+                    color: marineBlueDark,
                   ),
                 ),
               ),
+
               IconButton(
                 onPressed: () {},
                 icon: const Icon(
                   Icons.edit,
-                  color: Color(0xFF0879A8),
+                  color: marineCyan,
+                  size: 28,
                 ),
               ),
             ],
@@ -993,33 +1009,50 @@ class WaterParameters extends StatelessWidget {
 
           Row(
             children: const [
-              ParameterCard(
-                icon: Icons.science_outlined,
-                name: 'pH',
-                value: '7.8',
-                unit: '',
-                range: '(6.5 - 8.5)',
+              Expanded(
+                child: WaterCard(
+                  icon: Icons.science_outlined,
+                  title: 'pH',
+                  value: '7.8',
+                  unit: '',
+                  range: '(6.5 - 8.5)',
+                ),
               ),
-              ParameterCard(
-                icon: Icons.waves,
-                name: 'Salinity',
-                value: '18',
-                unit: 'ppt',
-                range: '(10 - 25)',
+
+              SizedBox(width: 8),
+
+              Expanded(
+                child: WaterCard(
+                  icon: Icons.waves,
+                  title: 'Salinity',
+                  value: '18',
+                  unit: 'ppt',
+                  range: '(10 - 25)',
+                ),
               ),
-              ParameterCard(
-                icon: Icons.air,
-                name: 'DO',
-                value: '5.6',
-                unit: 'mg/L',
-                range: '(≥ 5.0)',
+
+              SizedBox(width: 8),
+
+              Expanded(
+                child: WaterCard(
+                  icon: Icons.air,
+                  title: 'DO',
+                  value: '5.6',
+                  unit: 'mg/L',
+                  range: '(≥ 5.0)',
+                ),
               ),
-              ParameterCard(
-                icon: Icons.science,
-                name: 'Alkalinity',
-                value: '140',
-                unit: 'ppm',
-                range: '(80 - 200)',
+
+              SizedBox(width: 8),
+
+              Expanded(
+                child: WaterCard(
+                  icon: Icons.science,
+                  title: 'Alkalinity',
+                  value: '140',
+                  unit: 'ppm',
+                  range: '(80 - 200)',
+                ),
               ),
             ],
           ),
@@ -1030,20 +1063,20 @@ class WaterParameters extends StatelessWidget {
 }
 
 // ============================================================
-// PARAMETER CARD
+// WATER CARD
 // ============================================================
 
-class ParameterCard extends StatelessWidget {
+class WaterCard extends StatelessWidget {
   final IconData icon;
-  final String name;
+  final String title;
   final String value;
   final String unit;
   final String range;
 
-  const ParameterCard({
+  const WaterCard({
     super.key,
     required this.icon,
-    required this.name,
+    required this.title,
     required this.value,
     required this.unit,
     required this.range,
@@ -1051,92 +1084,89 @@ class ParameterCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: Container(
-        margin: const EdgeInsets.symmetric(
-          horizontal: 3,
-        ),
-        padding: const EdgeInsets.symmetric(
-          vertical: 12,
-          horizontal: 4,
-        ),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(20),
-        ),
-        child: Column(
-          children: [
-            Icon(
-              icon,
-              color: const Color(0xFF1594C0),
-              size: 32,
+    return Container(
+      height: 165,
+      padding: const EdgeInsets.symmetric(
+        horizontal: 5,
+        vertical: 12,
+      ),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            icon,
+            size: 31,
+            color: marineCyan,
+          ),
+
+          const SizedBox(height: 8),
+
+          Text(
+            title,
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              fontSize: 13,
+              fontWeight: FontWeight.bold,
+              color: marineBlueDark,
             ),
+          ),
 
-            const SizedBox(height: 7),
+          const SizedBox(height: 5),
 
-            Text(
-              name,
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
-                color: Color(0xFF075B80),
-                fontSize: 13,
-              ),
+          Text(
+            value,
+            style: const TextStyle(
+              fontSize: 25,
+              fontWeight: FontWeight.bold,
+              color: marineBlueDark,
             ),
+          ),
 
-            const SizedBox(height: 6),
-
+          if (unit.isNotEmpty)
             Text(
-              value,
+              unit,
               style: const TextStyle(
-                fontSize: 25,
-                fontWeight: FontWeight.bold,
-                color: Color(0xFF075B80),
-              ),
-            ),
-
-            if (unit.isNotEmpty)
-              Text(
-                unit,
-                style: const TextStyle(
-                  color: Colors.grey,
-                  fontSize: 10,
-                ),
-              ),
-
-            const SizedBox(height: 5),
-
-            Text(
-              range,
-              textAlign: TextAlign.center,
-              style: const TextStyle(
+                fontSize: 11,
                 color: Colors.grey,
-                fontSize: 9,
               ),
             ),
 
-            const SizedBox(height: 7),
+          const SizedBox(height: 4),
 
-            Container(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 8,
-                vertical: 4,
-              ),
-              decoration: BoxDecoration(
-                color: const Color(0xFFD0F5DD),
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: const Text(
-                'సరైనది',
-                style: TextStyle(
-                  color: Color(0xFF219653),
-                  fontSize: 9,
-                  fontWeight: FontWeight.bold,
-                ),
+          Text(
+            range,
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              fontSize: 9,
+              color: Colors.grey,
+            ),
+          ),
+
+          const SizedBox(height: 5),
+
+          Container(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 10,
+              vertical: 4,
+            ),
+            decoration: BoxDecoration(
+              color: const Color(0xFFD6F6E2),
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: const Text(
+              'సరైనది',
+              style: TextStyle(
+                fontSize: 10,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF159447),
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -1152,15 +1182,18 @@ class ProblemsSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.symmetric(
-        horizontal: 18,
+      padding: const EdgeInsets.fromLTRB(
+        16,
+        18,
+        16,
+        20,
       ),
-      padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color: const Color(0xFFE8F8FD),
-        borderRadius: BorderRadius.circular(25),
+        color: const Color(0xFFE9F8FD),
+        borderRadius: BorderRadius.circular(24),
         border: Border.all(
-          color: const Color(0xFFB9E8F6),
+          color: const Color(0xFFB7E3EF),
+          width: 1.5,
         ),
       ),
       child: Column(
@@ -1171,21 +1204,23 @@ class ProblemsSection extends StatelessWidget {
                 child: Text(
                   'Find Your Problems',
                   style: TextStyle(
-                    fontSize: 25,
+                    fontSize: 26,
                     fontWeight: FontWeight.bold,
-                    color: Color(0xFF075B80),
+                    color: marineBlueDark,
                   ),
                 ),
               ),
+
               Container(
-                padding: const EdgeInsets.all(12),
+                width: 52,
+                height: 52,
                 decoration: BoxDecoration(
                   color: Colors.white,
-                  borderRadius: BorderRadius.circular(15),
+                  borderRadius: BorderRadius.circular(16),
                 ),
                 child: const Icon(
                   Icons.manage_search,
-                  color: Color(0xFF0879A8),
+                  color: marineCyan,
                   size: 30,
                 ),
               ),
@@ -1207,43 +1242,66 @@ class ProblemsSection extends StatelessWidget {
 
           const SizedBox(height: 18),
 
-          GridView.count(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            crossAxisCount: 2,
-            mainAxisSpacing: 12,
-            crossAxisSpacing: 12,
-            childAspectRatio: 1.35,
+          Row(
             children: const [
-              ProblemCard(
-                icon: Icons.bug_report_outlined,
-                title: 'Vibrio',
-                subtitle: 'Vibrio problem',
+              Expanded(
+                child: ProblemCard(
+                  icon: Icons.bug_report_outlined,
+                  title: 'Vibrio',
+                  subtitle: 'Vibrio problem',
+                ),
               ),
-              ProblemCard(
-                icon: Icons.health_and_safety_outlined,
-                title: 'White Gut',
-                subtitle: 'Gut health problem',
+              SizedBox(width: 12),
+              Expanded(
+                child: ProblemCard(
+                  icon: Icons.health_and_safety_outlined,
+                  title: 'White Gut',
+                  subtitle: 'Gut health problem',
+                ),
               ),
-              ProblemCard(
-                icon: Icons.trending_down,
-                title: 'Slow Growth',
-                subtitle: 'Growth problem',
+            ],
+          ),
+
+          const SizedBox(height: 12),
+
+          Row(
+            children: const [
+              Expanded(
+                child: ProblemCard(
+                  icon: Icons.trending_down,
+                  title: 'Slow Growth',
+                  subtitle: 'Growth problem',
+                ),
               ),
-              ProblemCard(
-                icon: Icons.water_drop_outlined,
-                title: 'Low DO',
-                subtitle: 'Oxygen problem',
+              SizedBox(width: 12),
+              Expanded(
+                child: ProblemCard(
+                  icon: Icons.water_drop_outlined,
+                  title: 'Low DO',
+                  subtitle: 'Oxygen problem',
+                ),
               ),
-              ProblemCard(
-                icon: Icons.shield_outlined,
-                title: 'Soft Shell',
-                subtitle: 'Shell problem',
+            ],
+          ),
+
+          const SizedBox(height: 12),
+
+          Row(
+            children: const [
+              Expanded(
+                child: ProblemCard(
+                  icon: Icons.shield_outlined,
+                  title: 'Soft Shell',
+                  subtitle: 'Shell problem',
+                ),
               ),
-              ProblemCard(
-                icon: Icons.science_outlined,
-                title: 'Water Quality',
-                subtitle: 'Water problem',
+              SizedBox(width: 12),
+              Expanded(
+                child: ProblemCard(
+                  icon: Icons.science_outlined,
+                  title: 'Water Quality',
+                  subtitle: 'Water problem',
+                ),
               ),
             ],
           ),
@@ -1271,56 +1329,84 @@ class ProblemCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(22),
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(
-            icon,
-            color: const Color(0xFF0879A8),
-            size: 42,
-          ),
-
-          const SizedBox(height: 8),
-
-          Text(
-            title,
-            textAlign: TextAlign.center,
-            style: const TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: Color(0xFF075B80),
+    return InkWell(
+      borderRadius: BorderRadius.circular(20),
+      onTap: () {
+        showDialog(
+          context: context,
+          builder: (_) {
+            return AlertDialog(
+              title: Text(title),
+              content: Text(
+                '$subtitle\n\n'
+                'త్వరలో ఈ సమస్యకు సంబంధించిన పూర్తి సమాచారం '
+                'మరియు పరిష్కారాలు ఇక్కడ అందుబాటులో ఉంటాయి.',
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: const Text('OK'),
+                ),
+              ],
+            );
+          },
+        );
+      },
+      child: Container(
+        height: 145,
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              icon,
+              size: 38,
+              color: marineCyan,
             ),
-          ),
 
-          const SizedBox(height: 4),
+            const SizedBox(height: 10),
 
-          Text(
-            subtitle,
-            textAlign: TextAlign.center,
-            style: const TextStyle(
-              fontSize: 12,
-              color: Colors.grey,
+            Text(
+              title,
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                fontSize: 17,
+                fontWeight: FontWeight.bold,
+                color: marineBlueDark,
+              ),
             ),
-          ),
-        ],
+
+            const SizedBox(height: 5),
+
+            Text(
+              subtitle,
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                fontSize: 12,
+                color: Colors.grey,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
 }
 
 // ============================================================
-// PRODUCTS PAGE
+// PRODUCTS SCREEN
 // ============================================================
 
-class ProductsPage extends StatelessWidget {
-  const ProductsPage({super.key});
+class ProductsScreen extends StatelessWidget {
+  const ProductsScreen({super.key});
 
-  final List<Map<String, String>> products = const [
+  static const List<Map<String, String>> products = [
     {
       'name': 'Bio Sludge-X',
       'image': 'assets/bio sludge -x.png',
@@ -1366,17 +1452,18 @@ class ProductsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF4FBFE),
+      backgroundColor: pageBg,
       appBar: AppBar(
-        title: const Text(
-          'Our Products',
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            color: Color(0xFF075B80),
-          ),
-        ),
         backgroundColor: Colors.white,
         elevation: 0,
+        title: const Text(
+          'Marine Products',
+          style: TextStyle(
+            color: marineBlueDark,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        centerTitle: true,
       ),
       body: GridView.builder(
         padding: const EdgeInsets.all(16),
@@ -1384,8 +1471,8 @@ class ProductsPage extends StatelessWidget {
         gridDelegate:
             const SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 2,
-          crossAxisSpacing: 14,
-          mainAxisSpacing: 14,
+          crossAxisSpacing: 12,
+          mainAxisSpacing: 12,
           childAspectRatio: 0.78,
         ),
         itemBuilder: (context, index) {
@@ -1398,8 +1485,8 @@ class ProductsPage extends StatelessWidget {
               boxShadow: [
                 BoxShadow(
                   color: Colors.black.withOpacity(0.05),
-                  blurRadius: 10,
-                  offset: const Offset(0, 4),
+                  blurRadius: 8,
+                  offset: const Offset(0, 3),
                 ),
               ],
             ),
@@ -1407,14 +1494,14 @@ class ProductsPage extends StatelessWidget {
               children: [
                 Expanded(
                   child: Padding(
-                    padding: const EdgeInsets.all(12),
+                    padding: const EdgeInsets.all(10),
                     child: Image.asset(
                       product['image']!,
                       fit: BoxFit.contain,
                       errorBuilder: (_, __, ___) {
                         return const Icon(
                           Icons.image_not_supported_outlined,
-                          size: 55,
+                          size: 50,
                           color: Colors.grey,
                         );
                       },
@@ -1423,14 +1510,19 @@ class ProductsPage extends StatelessWidget {
                 ),
 
                 Padding(
-                  padding: const EdgeInsets.all(12),
+                  padding: const EdgeInsets.fromLTRB(
+                    8,
+                    0,
+                    8,
+                    14,
+                  ),
                   child: Text(
                     product['name']!,
                     textAlign: TextAlign.center,
                     style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
-                      color: Color(0xFF075B80),
+                      color: marineBlueDark,
                     ),
                   ),
                 ),
@@ -1444,170 +1536,182 @@ class ProductsPage extends StatelessWidget {
 }
 
 // ============================================================
-// SUPPORT PAGE
+// SUPPORT SCREEN
 // ============================================================
 
-class SupportPage extends StatelessWidget {
-  const SupportPage({super.key});
+class SupportScreen extends StatelessWidget {
+  const SupportScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF4FBFE),
+      backgroundColor: pageBg,
       appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0,
         title: const Text(
           'Support',
           style: TextStyle(
+            color: marineBlueDark,
             fontWeight: FontWeight.bold,
-            color: Color(0xFF075B80),
           ),
         ),
-        backgroundColor: Colors.white,
-        elevation: 0,
+        centerTitle: true,
       ),
-      body: ListView(
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
-        children: [
-          const SizedBox(height: 15),
+        child: Column(
+          children: [
+            const SizedBox(height: 20),
 
-          Container(
-            padding: const EdgeInsets.all(24),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(25),
+            Container(
+              width: 100,
+              height: 100,
+              decoration: BoxDecoration(
+                color: const Color(0xFFDDF5FC),
+                borderRadius: BorderRadius.circular(50),
+              ),
+              child: const Icon(
+                Icons.headset_mic,
+                size: 55,
+                color: marineCyan,
+              ),
             ),
-            child: Column(
-              children: [
-                const Icon(
-                  Icons.support_agent,
-                  size: 70,
-                  color: Color(0xFF0879A8),
-                ),
 
-                const SizedBox(height: 15),
+            const SizedBox(height: 20),
 
-                const Text(
-                  'Need Help?',
-                  style: TextStyle(
-                    fontSize: 27,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF075B80),
-                  ),
-                ),
-
-                const SizedBox(height: 8),
-
-                const Text(
-                  'Marine Aqua Technologies support team is here to help you.',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: Colors.grey,
-                    fontSize: 15,
-                  ),
-                ),
-
-                const SizedBox(height: 25),
-
-                SizedBox(
-                  width: double.infinity,
-                  height: 52,
-                  child: ElevatedButton.icon(
-                    onPressed: () {},
-                    icon: const Icon(Icons.phone),
-                    label: const Text('Contact Support'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor:
-                          const Color(0xFF0879A8),
-                      foregroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(
-                        borderRadius:
-                            BorderRadius.circular(15),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
+            const Text(
+              'Marine Aqua Technologies',
+              style: TextStyle(
+                fontSize: 23,
+                fontWeight: FontWeight.bold,
+                color: marineBlueDark,
+              ),
             ),
-          ),
 
-          const SizedBox(height: 20),
+            const SizedBox(height: 8),
 
-          _supportTile(
-            Icons.water_drop,
-            'Water Quality',
-            'Get guidance for pond water parameters.',
-          ),
+            const Text(
+              'మేము మీకు సహాయం చేయడానికి సిద్ధంగా ఉన్నాము',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 16,
+                color: Colors.grey,
+              ),
+            ),
 
-          _supportTile(
-            Icons.health_and_safety,
-            'Disease Support',
-            'Get information about shrimp health problems.',
-          ),
+            const SizedBox(height: 30),
 
-          _supportTile(
-            Icons.inventory_2,
-            'Product Support',
-            'Learn about Marine Aqua Technologies products.',
-          ),
-        ],
+            SupportButton(
+              icon: Icons.phone,
+              title: 'Call Support',
+              subtitle: 'మాతో మాట్లాడండి',
+              onTap: () {},
+            ),
+
+            const SizedBox(height: 12),
+
+            SupportButton(
+              icon: Icons.chat,
+              title: 'WhatsApp Support',
+              subtitle: 'WhatsApp ద్వారా సంప్రదించండి',
+              onTap: () {},
+            ),
+
+            const SizedBox(height: 12),
+
+            SupportButton(
+              icon: Icons.location_on,
+              title: 'Technical Officer',
+              subtitle: 'మీ ప్రాంత Technical Officer ను సంప్రదించండి',
+              onTap: () {},
+            ),
+          ],
+        ),
       ),
     );
   }
+}
 
-  Widget _supportTile(
-    IconData icon,
-    String title,
-    String subtitle,
-  ) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(18),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: const Color(0xFFE5F7FC),
-              borderRadius: BorderRadius.circular(15),
+// ============================================================
+// SUPPORT BUTTON
+// ============================================================
+
+class SupportButton extends StatelessWidget {
+  final IconData icon;
+  final String title;
+  final String subtitle;
+  final VoidCallback onTap;
+
+  const SupportButton({
+    super.key,
+    required this.icon,
+    required this.title,
+    required this.subtitle,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      borderRadius: BorderRadius.circular(20),
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.all(17),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 55,
+              height: 55,
+              decoration: BoxDecoration(
+                color: const Color(0xFFE1F5FB),
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Icon(
+                icon,
+                color: marineCyan,
+                size: 28,
+              ),
             ),
-            child: Icon(
-              icon,
-              color: const Color(0xFF0879A8),
-              size: 30,
-            ),
-          ),
 
-          const SizedBox(width: 15),
+            const SizedBox(width: 15),
 
-          Expanded(
-            child: Column(
-              crossAxisAlignment:
-                  CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: const TextStyle(
-                    fontSize: 17,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF075B80),
+            Expanded(
+              child: Column(
+                crossAxisAlignment:
+                    CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: const TextStyle(
+                      fontSize: 17,
+                      fontWeight: FontWeight.bold,
+                      color: marineBlueDark,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  subtitle,
-                  style: const TextStyle(
-                    color: Colors.grey,
-                    fontSize: 13,
+                  const SizedBox(height: 4),
+                  Text(
+                    subtitle,
+                    style: const TextStyle(
+                      fontSize: 12,
+                      color: Colors.grey,
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-        ],
+
+            const Icon(
+              Icons.arrow_forward_ios,
+              size: 17,
+              color: marineCyan,
+            ),
+          ],
+        ),
       ),
     );
   }
