@@ -686,7 +686,7 @@ class HomeScreen extends StatelessWidget {
 
                     const SizedBox(height: 18),
 
-                    const SuccessStoriesSection(),
+                    const FindYourProblemsSection(),
 
                     const SizedBox(height: 20),
                   ],
@@ -965,10 +965,10 @@ class HomeCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 138,
+      height: 148,
       padding: const EdgeInsets.symmetric(
         horizontal: 5,
-        vertical: 10,
+        vertical: 12,
       ),
       decoration: BoxDecoration(
         color: color,
@@ -998,6 +998,268 @@ class HomeCard extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+/* =========================================================
+   FIND YOUR PROBLEMS
+========================================================= */
+
+class FindYourProblemsSection extends StatelessWidget {
+  const FindYourProblemsSection({super.key});
+
+  static const List<Map<String, dynamic>> problems = [
+    {
+      'icon': Icons.bug_report_outlined,
+      'title': 'Vibrio',
+      'subtitle': 'Vibrio problem',
+    },
+    {
+      'icon': Icons.health_and_safety_outlined,
+      'title': 'White Gut',
+      'subtitle': 'Gut health problem',
+    },
+    {
+      'icon': Icons.trending_down_rounded,
+      'title': 'Slow Growth',
+      'subtitle': 'Growth problem',
+    },
+    {
+      'icon': Icons.water_drop_outlined,
+      'title': 'Low DO',
+      'subtitle': 'Oxygen problem',
+    },
+    {
+      'icon': Icons.shield_outlined,
+      'title': 'Soft Shell',
+      'subtitle': 'Shell problem',
+    },
+    {
+      'icon': Icons.science_outlined,
+      'title': 'Water Quality',
+      'subtitle': 'Water problem',
+    },
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.fromLTRB(16, 18, 16, 18),
+      decoration: BoxDecoration(
+        color: const Color(0xFFEAF8FF),
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(
+          color: const Color(0xFFB8E5F6),
+          width: 1.3,
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Expanded(
+                child: Text(
+                  'Find Your Problems',
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.w800,
+                    color: Color(0xFF075985),
+                  ),
+                ),
+              ),
+              Container(
+                width: 42,
+                height: 42,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(14),
+                ),
+                child: const Icon(
+                  Icons.manage_search_rounded,
+                  color: Color(0xFF087DB5),
+                  size: 27,
+                ),
+              ),
+            ],
+          ),
+
+          const SizedBox(height: 5),
+
+          const Text(
+            'మీ చెరువులో ఉన్న సమస్యను ఎంచుకోండి',
+            style: TextStyle(
+              fontSize: 14,
+              color: Color(0xFF617784),
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+
+          const SizedBox(height: 16),
+
+          GridView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: problems.length,
+            gridDelegate:
+                const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              crossAxisSpacing: 12,
+              mainAxisSpacing: 12,
+              childAspectRatio: 1.45,
+            ),
+            itemBuilder: (context, index) {
+              final problem = problems[index];
+
+              return InkWell(
+                borderRadius: BorderRadius.circular(18),
+                onTap: () => _showProblemInfo(
+                  context,
+                  problem['title'] as String,
+                  problem['subtitle'] as String,
+                  problem['icon'] as IconData,
+                ),
+                child: Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(18),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.05),
+                        blurRadius: 8,
+                        offset: const Offset(0, 3),
+                      ),
+                    ],
+                  ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        problem['icon'] as IconData,
+                        size: 34,
+                        color: const Color(0xFF087DB5),
+                      ),
+                      const SizedBox(height: 7),
+                      Text(
+                        problem['title'] as String,
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w800,
+                          color: Color(0xFF075985),
+                        ),
+                      ),
+                      const SizedBox(height: 3),
+                      Text(
+                        problem['subtitle'] as String,
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                          fontSize: 11,
+                          color: Colors.grey,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  static void _showProblemInfo(
+    BuildContext context,
+    String title,
+    String subtitle,
+    IconData icon,
+  ) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(28),
+        ),
+      ),
+      builder: (context) {
+        return SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(24, 22, 24, 30),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  width: 45,
+                  height: 5,
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade300,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+                const SizedBox(height: 22),
+                Icon(
+                  icon,
+                  size: 52,
+                  color: const Color(0xFF087DB5),
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  title,
+                  style: const TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.w800,
+                    color: Color(0xFF075985),
+                  ),
+                ),
+                const SizedBox(height: 7),
+                Text(
+                  subtitle,
+                  style: const TextStyle(
+                    fontSize: 15,
+                    color: Colors.grey,
+                  ),
+                ),
+                const SizedBox(height: 10),
+                const Text(
+                  'ఈ సమస్యకు సంబంధించిన పూర్తి వివరాలు, పరిష్కారాలు మరియు సంబంధిత ప్రొడక్ట్స్‌ను త్వరలో ఇక్కడ చూడవచ్చు.',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 14,
+                    height: 1.5,
+                    color: Colors.black87,
+                  ),
+                ),
+                const SizedBox(height: 20),
+                SizedBox(
+                  width: double.infinity,
+                  height: 50,
+                  child: ElevatedButton(
+                    onPressed: () => Navigator.pop(context),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF087DB5),
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15),
+                      ),
+                    ),
+                    child: const Text(
+                      'Close',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 }
