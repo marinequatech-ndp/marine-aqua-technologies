@@ -685,15 +685,7 @@ class HomeScreen extends StatelessWidget {
 
                     const SizedBox(height: 18),
 
-                    const HomeProductsSection(),
-
-                    const SizedBox(height: 18),
-
-                    const FeaturedProduct(),
-
-                    const SizedBox(height: 18),
-
-                    const TechnicalSupportCard(),
+                    const SuccessStoriesSection(),
 
                     const SizedBox(height: 20),
                   ],
@@ -947,8 +939,8 @@ class QuickActions extends StatelessWidget {
 
         Expanded(
           child: HomeCard(
-            icon: Icons.water_drop,
-            title: 'నీటి\nనిర్వహణ',
+            icon: Icons.manage_search,
+            title: 'Find Your\nProblems',
             color: const Color(0xFFFFF2C9),
           ),
         ),
@@ -972,7 +964,7 @@ class HomeCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 118,
+      height: 138,
       padding: const EdgeInsets.symmetric(
         horizontal: 5,
         vertical: 10,
@@ -987,24 +979,122 @@ class HomeCard extends StatelessWidget {
         children: [
           Icon(
             icon,
-            size: 32,
+            size: 38,
             color: const Color(0xFF087DB5),
           ),
 
-          const SizedBox(height: 8),
+          const SizedBox(height: 10),
 
           Text(
             title,
             textAlign: TextAlign.center,
             style: const TextStyle(
               fontWeight: FontWeight.bold,
-              fontSize: 13,
+              fontSize: 13.5,
               height: 1.2,
               color: Color(0xFF064E7A),
             ),
           ),
         ],
       ),
+    );
+  }
+}
+
+/* =========================================================
+   SUCCESS STORIES
+   HORIZONTAL SCROLL
+========================================================= */
+
+class SuccessStoriesSection extends StatelessWidget {
+  const SuccessStoriesSection({super.key});
+
+  static const List<String> stories = [
+    'assets/success_stories/story1.jpg',
+    'assets/success_stories/story2.jpg',
+    'assets/success_stories/story3.jpg',
+    'assets/success_stories/story4.jpg',
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            const Expanded(
+              child: Text(
+                'మా సక్సెస్ స్టోరీస్',
+                style: TextStyle(
+                  color: Color(0xFF064E7A),
+                  fontSize: 27,
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+            ),
+            const Text(
+              'మరిన్ని చూడండి →',
+              style: TextStyle(
+                color: Color(0xFF0877AC),
+                fontSize: 13,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 10),
+        SizedBox(
+          height: 190,
+          child: ListView.separated(
+            scrollDirection: Axis.horizontal,
+            physics: const BouncingScrollPhysics(),
+            itemCount: stories.length,
+            separatorBuilder: (_, __) => const SizedBox(width: 12),
+            itemBuilder: (context, index) {
+              return Container(
+                width: 275,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(22),
+                  border: Border.all(
+                    color: const Color(0xFFE0EEF5),
+                  ),
+                ),
+                clipBehavior: Clip.antiAlias,
+                child: Image.asset(
+                  stories[index],
+                  fit: BoxFit.cover,
+                  errorBuilder: (_, __, ___) {
+                    return Container(
+                      color: const Color(0xFFEAF7FC),
+                      alignment: Alignment.center,
+                      child: const Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.photo_library_outlined,
+                            size: 48,
+                            color: Color(0xFF0B79B2),
+                          ),
+                          SizedBox(height: 8),
+                          Text(
+                            'Success Story',
+                            style: TextStyle(
+                              color: Color(0xFF075078),
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
+              );
+            },
+          ),
+        ),
+      ],
     );
   }
 }
