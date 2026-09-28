@@ -1,9 +1,27 @@
-import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  try {
+    await Firebase.initializeApp();
+  } catch (e) {
+    debugPrint("Firebase initialization error: $e");
+  }
+
   runApp(const MarineAquaApp());
 }
+
+// ============================================================
+// COLORS
+// ============================================================
+
+const Color marineBlue = Color(0xFF005B96);
+const Color marineCyan = Color(0xFF18A9D1);
+const Color darkText = Color(0xFF123B5D);
+const Color backgroundColor = Color(0xFFF4FAFC);
 
 // ============================================================
 // APP
@@ -19,25 +37,16 @@ class MarineAquaApp extends StatelessWidget {
       title: 'Marine Aqua Technologies',
       theme: ThemeData(
         useMaterial3: true,
-        fontFamily: 'Roboto',
-        scaffoldBackgroundColor: const Color(0xFFF4FAFC),
+        scaffoldBackgroundColor: backgroundColor,
         colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFF006B96),
+          seedColor: marineBlue,
         ),
+        fontFamily: 'Arial',
       ),
       home: const SplashScreen(),
     );
   }
 }
-
-// ============================================================
-// COLORS
-// ============================================================
-
-const Color marineBlue = Color(0xFF005B87);
-const Color marineCyan = Color(0xFF18A9D1);
-const Color darkText = Color(0xFF123F5D);
-const Color bgColor = Color(0xFFF4FAFC);
 
 // ============================================================
 // SPLASH SCREEN
@@ -55,13 +64,13 @@ class _SplashScreenState extends State<SplashScreen> {
   void initState() {
     super.initState();
 
-    Timer(const Duration(seconds: 3), () {
+    Future.delayed(const Duration(seconds: 2), () {
       if (!mounted) return;
 
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (_) => const LoginGate(),
+          builder: (_) => const LoginPage(),
         ),
       );
     });
@@ -70,123 +79,84 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Stack(
-        fit: StackFit.expand,
-        children: [
-          Image.asset(
-            'assets/marine_splash.png',
-            fit: BoxFit.cover,
-            errorBuilder: (context, error, stackTrace) {
-              return Container(
-                decoration: const BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      Color(0xFFBFEFFF),
-                      Color(0xFF008BC2),
-                      Color(0xFF004C73),
-                    ],
-                  ),
-                ),
-                child: const Center(
-                  child: Icon(
-                    Icons.water,
-                    size: 100,
-                    color: Colors.white,
-                  ),
-                ),
-              );
-            },
-          ),
+      backgroundColor: Colors.white,
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
 
-          // Slight dark overlay
-          Container(
-            color: Colors.black.withOpacity(0.08),
-          ),
+            // MARINE LOGO
+            Image.asset(
+              'assets/marine_logo.png',
+              width: 190,
+              height: 190,
+              fit: BoxFit.contain,
+              errorBuilder: (context, error, stackTrace) {
+                return const Icon(
+                  Icons.water_drop,
+                  size: 120,
+                  color: marineBlue,
+                );
+              },
+            ),
 
-          // Logo / Brand
-          SafeArea(
-            child: Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Icon(
-                    Icons.water_drop_rounded,
-                    size: 72,
-                    color: Colors.white,
-                  ),
-                  const SizedBox(height: 12),
-                  const Text(
-                    'MARINE',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 42,
-                      fontWeight: FontWeight.w900,
-                      letterSpacing: 2,
-                    ),
-                  ),
-                  const Text(
-                    'AQUA TECHNOLOGIES',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.w700,
-                      letterSpacing: 1.5,
-                    ),
-                  ),
-                  const SizedBox(height: 18),
-                  Container(
-                    width: 70,
-                    height: 3,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                  ),
-                  const SizedBox(height: 18),
-                  const Text(
-                    'Smart Aquaculture. Better Results.',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 15,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ],
+            const SizedBox(height: 25),
+
+            const Text(
+              'MARINE AQUA',
+              style: TextStyle(
+                fontSize: 28,
+                fontWeight: FontWeight.bold,
+                color: marineBlue,
+                letterSpacing: 1.5,
               ),
             ),
-          ),
-        ],
+
+            const Text(
+              'TECHNOLOGIES',
+              style: TextStyle(
+                fontSize: 23,
+                fontWeight: FontWeight.w600,
+                color: darkText,
+                letterSpacing: 2,
+              ),
+            ),
+
+            const SizedBox(height: 12),
+
+            const Text(
+              'Smart Aquaculture. Better Results.',
+              style: TextStyle(
+                fontSize: 15,
+                color: Colors.grey,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
 }
 
 // ============================================================
-// LOGIN GATE
+// LOGIN PAGE
 // ============================================================
 
-class LoginGate extends StatefulWidget {
-  const LoginGate({super.key});
+class LoginPage extends StatefulWidget {
+  const LoginPage({super.key});
 
   @override
-  State<LoginGate> createState() => _LoginGateState();
+  State<LoginPage> createState() => _LoginPageState();
 }
 
-class _LoginGateState extends State<LoginGate> {
-  bool otpScreen = false;
-
+class _LoginPageState extends State<LoginPage> {
   final TextEditingController mobileController =
       TextEditingController();
 
-  final TextEditingController otpController =
-      TextEditingController();
+  bool loading = false;
 
-  String enteredMobile = '';
-
-  void sendOtp() {
-    final mobile = mobileController.text.trim();
+  void sendOtp() async {
+    String mobile = mobileController.text.trim();
 
     if (mobile.length != 10) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -198,15 +168,214 @@ class _LoginGateState extends State<LoginGate> {
     }
 
     setState(() {
-      enteredMobile = mobile;
-      otpScreen = true;
+      loading = true;
     });
+
+    final phoneNumber = '+91$mobile';
+
+    try {
+      await FirebaseAuth.instance.verifyPhoneNumber(
+        phoneNumber: phoneNumber,
+
+        verificationCompleted:
+            (PhoneAuthCredential credential) async {
+          await FirebaseAuth.instance.signInWithCredential(
+            credential,
+          );
+        },
+
+        verificationFailed: (FirebaseAuthException e) {
+          if (!mounted) return;
+
+          setState(() {
+            loading = false;
+          });
+
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                e.message ?? 'OTP verification failed',
+              ),
+            ),
+          );
+        },
+
+        codeSent: (
+          String verificationId,
+          int? resendToken,
+        ) {
+          if (!mounted) return;
+
+          setState(() {
+            loading = false;
+          });
+
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => OTPPage(
+                verificationId: verificationId,
+                mobileNumber: mobile,
+              ),
+            ),
+          );
+        },
+
+        codeAutoRetrievalTimeout: (String verificationId) {},
+      );
+    } catch (e) {
+      setState(() {
+        loading = false;
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error: $e'),
+        ),
+      );
+    }
   }
 
-  void verifyOtp() {
-    final otp = otpController.text.trim();
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(
+            horizontal: 28,
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
 
-    if (otp.length != 6) {
+              Image.asset(
+                'assets/marine_logo.png',
+                width: 120,
+                height: 120,
+                errorBuilder: (context, error, stackTrace) {
+                  return const Icon(
+                    Icons.water_drop,
+                    size: 90,
+                    color: marineBlue,
+                  );
+                },
+              ),
+
+              const SizedBox(height: 20),
+
+              const Text(
+                'Welcome',
+                style: TextStyle(
+                  fontSize: 32,
+                  fontWeight: FontWeight.bold,
+                  color: darkText,
+                ),
+              ),
+
+              const SizedBox(height: 8),
+
+              const Text(
+                'Marine Aqua Technologies',
+                style: TextStyle(
+                  fontSize: 17,
+                  color: Colors.grey,
+                ),
+              ),
+
+              const SizedBox(height: 45),
+
+              TextField(
+                controller: mobileController,
+                keyboardType: TextInputType.phone,
+                maxLength: 10,
+                decoration: InputDecoration(
+                  counterText: '',
+                  prefixText: '+91  ',
+                  prefixStyle: const TextStyle(
+                    fontSize: 17,
+                    fontWeight: FontWeight.w600,
+                    color: darkText,
+                  ),
+                  hintText: 'Enter Mobile Number',
+                  prefixIcon: const Icon(
+                    Icons.phone_android,
+                    color: marineBlue,
+                  ),
+                  filled: true,
+                  fillColor: Colors.white,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(16),
+                    borderSide: BorderSide.none,
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 20),
+
+              SizedBox(
+                width: double.infinity,
+                height: 55,
+                child: ElevatedButton(
+                  onPressed: loading ? null : sendOtp,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: marineBlue,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                  ),
+                  child: loading
+                      ? const SizedBox(
+                          height: 22,
+                          width: 22,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: Colors.white,
+                          ),
+                        )
+                      : const Text(
+                          'SEND OTP',
+                          style: TextStyle(
+                            fontSize: 17,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// ============================================================
+// OTP PAGE
+// ============================================================
+
+class OTPPage extends StatefulWidget {
+  final String verificationId;
+  final String mobileNumber;
+
+  const OTPPage({
+    super.key,
+    required this.verificationId,
+    required this.mobileNumber,
+  });
+
+  @override
+  State<OTPPage> createState() => _OTPPageState();
+}
+
+class _OTPPageState extends State<OTPPage> {
+  final TextEditingController otpController =
+      TextEditingController();
+
+  bool loading = false;
+
+  Future<void> verifyOtp() async {
+    if (otpController.text.trim().length != 6) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Please enter 6 digit OTP'),
@@ -215,380 +384,153 @@ class _LoginGateState extends State<LoginGate> {
       return;
     }
 
-    // Temporary OTP verification.
-    // Later Firebase Phone Authentication can be connected here.
-
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(
-        builder: (_) => const HomePage(),
-      ),
-    );
-  }
-
-  void changeNumber() {
     setState(() {
-      otpScreen = false;
-      otpController.clear();
+      loading = true;
     });
-  }
 
-  @override
-  void dispose() {
-    mobileController.dispose();
-    otpController.dispose();
-    super.dispose();
+    try {
+      PhoneAuthCredential credential =
+          PhoneAuthProvider.credential(
+        verificationId: widget.verificationId,
+        smsCode: otpController.text.trim(),
+      );
+
+      await FirebaseAuth.instance.signInWithCredential(
+        credential,
+      );
+
+      if (!mounted) return;
+
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(
+          builder: (_) => const HomePage(),
+        ),
+        (route) => false,
+      );
+    } on FirebaseAuthException catch (e) {
+      setState(() {
+        loading = false;
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            e.message ?? 'Invalid OTP',
+          ),
+        ),
+      );
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: bgColor,
+      appBar: AppBar(
+        backgroundColor: backgroundColor,
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(
+            Icons.arrow_back,
+            color: darkText,
+          ),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+      ),
+
       body: SafeArea(
-        child: otpScreen
-            ? buildOtpScreen()
-            : buildMobileScreen(),
-      ),
-    );
-  }
-
-  // ==========================================================
-  // MOBILE SCREEN
-  // ==========================================================
-
-  Widget buildMobileScreen() {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.symmetric(
-        horizontal: 28,
-        vertical: 35,
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const SizedBox(height: 25),
-
-          Center(
-            child: Column(
-              children: [
-                Container(
-                  width: 92,
-                  height: 92,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(25),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.08),
-                        blurRadius: 20,
-                        offset: const Offset(0, 8),
-                      ),
-                    ],
-                  ),
-                  child: const Icon(
-                    Icons.water_drop_rounded,
-                    size: 55,
-                    color: marineCyan,
-                  ),
-                ),
-
-                const SizedBox(height: 20),
-
-                const Text(
-                  'MARINE',
-                  style: TextStyle(
-                    fontSize: 34,
-                    fontWeight: FontWeight.w900,
-                    color: marineBlue,
-                    letterSpacing: 1,
-                  ),
-                ),
-
-                const Text(
-                  'AQUA TECHNOLOGIES',
-                  style: TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w700,
-                    color: marineBlue,
-                    letterSpacing: 1,
-                  ),
-                ),
-
-                const SizedBox(height: 8),
-
-                const Text(
-                  'Smart Aquaculture. Better Results.',
-                  style: TextStyle(
-                    color: Colors.grey,
-                    fontSize: 14,
-                  ),
-                ),
-              ],
-            ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(
+            horizontal: 28,
           ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
 
-          const SizedBox(height: 55),
-
-          const Text(
-            'Welcome',
-            style: TextStyle(
-              fontSize: 32,
-              fontWeight: FontWeight.w800,
-              color: darkText,
-            ),
-          ),
-
-          const SizedBox(height: 8),
-
-          const Text(
-            'Login using your mobile number',
-            style: TextStyle(
-              fontSize: 16,
-              color: Colors.grey,
-            ),
-          ),
-
-          const SizedBox(height: 30),
-
-          const Text(
-            'Mobile Number',
-            style: TextStyle(
-              fontSize: 15,
-              fontWeight: FontWeight.w700,
-              color: darkText,
-            ),
-          ),
-
-          const SizedBox(height: 10),
-
-          Container(
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(
-                color: const Color(0xFFD8E7ED),
+              const Icon(
+                Icons.sms_outlined,
+                size: 75,
+                color: marineBlue,
               ),
-            ),
-            child: TextField(
-              controller: mobileController,
-              keyboardType: TextInputType.phone,
-              maxLength: 10,
-              decoration: const InputDecoration(
-                counterText: '',
-                prefixIcon: Icon(
-                  Icons.phone_android_rounded,
-                  color: marineBlue,
-                ),
-                prefixText: '+91  ',
-                prefixStyle: TextStyle(
-                  color: marineBlue,
-                  fontWeight: FontWeight.bold,
-                ),
-                hintText: 'Enter mobile number',
-                border: InputBorder.none,
-                contentPadding: EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 17,
-                ),
-              ),
-            ),
-          ),
 
-          const SizedBox(height: 25),
+              const SizedBox(height: 25),
 
-          SizedBox(
-            width: double.infinity,
-            height: 55,
-            child: ElevatedButton(
-              onPressed: sendOtp,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: marineBlue,
-                foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
-                ),
-              ),
-              child: const Text(
-                'SEND OTP',
+              const Text(
+                'Verify OTP',
                 style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w800,
-                  letterSpacing: 1,
+                  fontSize: 30,
+                  fontWeight: FontWeight.bold,
+                  color: darkText,
                 ),
               ),
-            ),
-          ),
 
-          const SizedBox(height: 25),
+              const SizedBox(height: 10),
 
-          Center(
-            child: Text(
-              'By continuing, you agree to use Marine Aqua Technologies.',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                color: Colors.grey.shade600,
-                fontSize: 12,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  // ==========================================================
-  // OTP SCREEN
-  // ==========================================================
-
-  Widget buildOtpScreen() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 28),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const SizedBox(height: 35),
-
-          IconButton(
-            onPressed: changeNumber,
-            icon: const Icon(
-              Icons.arrow_back,
-              size: 28,
-              color: darkText,
-            ),
-          ),
-
-          const SizedBox(height: 30),
-
-          Center(
-            child: Container(
-              width: 85,
-              height: 85,
-              decoration: BoxDecoration(
-                color: const Color(0xFFE2F5FB),
-                borderRadius: BorderRadius.circular(25),
-              ),
-              child: const Icon(
-                Icons.lock_outline_rounded,
-                size: 45,
-                color: marineBlue,
-              ),
-            ),
-          ),
-
-          const SizedBox(height: 30),
-
-          const Center(
-            child: Text(
-              'Verify Mobile Number',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 28,
-                fontWeight: FontWeight.w800,
-                color: darkText,
-              ),
-            ),
-          ),
-
-          const SizedBox(height: 12),
-
-          Center(
-            child: Text(
-              'Enter the 6 digit OTP sent to\n+91 $enteredMobile',
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                fontSize: 15,
-                color: Colors.grey,
-                height: 1.5,
-              ),
-            ),
-          ),
-
-          const SizedBox(height: 40),
-
-          const Text(
-            '6 Digit OTP',
-            style: TextStyle(
-              fontSize: 15,
-              fontWeight: FontWeight.w700,
-              color: darkText,
-            ),
-          ),
-
-          const SizedBox(height: 10),
-
-          Container(
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(
-                color: const Color(0xFFD8E7ED),
-              ),
-            ),
-            child: TextField(
-              controller: otpController,
-              keyboardType: TextInputType.number,
-              maxLength: 6,
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                fontSize: 25,
-                fontWeight: FontWeight.bold,
-                letterSpacing: 12,
-                color: marineBlue,
-              ),
-              decoration: const InputDecoration(
-                counterText: '',
-                hintText: '------',
-                hintStyle: TextStyle(
-                  letterSpacing: 10,
+              Text(
+                'OTP sent to +91 ${widget.mobileNumber}',
+                textAlign: TextAlign.center,
+                style: const TextStyle(
                   color: Colors.grey,
-                ),
-                border: InputBorder.none,
-                contentPadding: EdgeInsets.symmetric(
-                  vertical: 18,
+                  fontSize: 15,
                 ),
               ),
-            ),
-          ),
 
-          const SizedBox(height: 25),
+              const SizedBox(height: 35),
 
-          SizedBox(
-            width: double.infinity,
-            height: 55,
-            child: ElevatedButton(
-              onPressed: verifyOtp,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: marineBlue,
-                foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
-                ),
-              ),
-              child: const Text(
-                'VERIFY OTP',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w800,
-                  letterSpacing: 1,
-                ),
-              ),
-            ),
-          ),
-
-          const SizedBox(height: 18),
-
-          Center(
-            child: TextButton(
-              onPressed: sendOtp,
-              child: const Text(
-                'Resend OTP',
-                style: TextStyle(
-                  color: marineBlue,
+              TextField(
+                controller: otpController,
+                keyboardType: TextInputType.number,
+                maxLength: 6,
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  fontSize: 25,
                   fontWeight: FontWeight.bold,
+                  letterSpacing: 8,
+                ),
+                decoration: InputDecoration(
+                  counterText: '',
+                  hintText: '••••••',
+                  filled: true,
+                  fillColor: Colors.white,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(16),
+                    borderSide: BorderSide.none,
+                  ),
                 ),
               ),
-            ),
+
+              const SizedBox(height: 25),
+
+              SizedBox(
+                width: double.infinity,
+                height: 55,
+                child: ElevatedButton(
+                  onPressed: loading ? null : verifyOtp,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: marineBlue,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                  ),
+                  child: loading
+                      ? const CircularProgressIndicator(
+                          color: Colors.white,
+                        )
+                      : const Text(
+                          'VERIFY OTP',
+                          style: TextStyle(
+                            fontSize: 17,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                ),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
@@ -622,11 +564,15 @@ class _HomePageState extends State<HomePage> {
 
       bottomNavigationBar: NavigationBar(
         selectedIndex: selectedIndex,
+        backgroundColor: Colors.white,
+        indicatorColor: const Color(0xFFD9F3FA),
+
         onDestinationSelected: (index) {
           setState(() {
             selectedIndex = index;
           });
         },
+
         destinations: const [
           NavigationDestination(
             icon: Icon(Icons.home_outlined),
@@ -669,38 +615,56 @@ class HomeContent extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const SizedBox(height: 10),
 
-            const Center(
-              child: Column(
-                children: [
-                  Text(
-                    'MARINE AQUA',
-                    style: TextStyle(
-                      fontSize: 27,
-                      fontWeight: FontWeight.w900,
+            Row(
+              children: [
+                Image.asset(
+                  'assets/marine_logo.png',
+                  width: 75,
+                  height: 75,
+                  errorBuilder: (_, __, ___) {
+                    return const Icon(
+                      Icons.water_drop,
+                      size: 55,
                       color: marineBlue,
-                    ),
+                    );
+                  },
+                ),
+
+                const SizedBox(width: 15),
+
+                const Expanded(
+                  child: Column(
+                    crossAxisAlignment:
+                        CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'MARINE AQUA',
+                        style: TextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold,
+                          color: marineBlue,
+                        ),
+                      ),
+                      Text(
+                        'TECHNOLOGIES',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: darkText,
+                        ),
+                      ),
+                      Text(
+                        'Smart Aquaculture. Better Results.',
+                        style: TextStyle(
+                          color: Colors.grey,
+                          fontSize: 12,
+                        ),
+                      ),
+                    ],
                   ),
-                  Text(
-                    'TECHNOLOGIES',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w800,
-                      color: marineBlue,
-                      letterSpacing: 2,
-                    ),
-                  ),
-                  SizedBox(height: 5),
-                  Text(
-                    'Smart Aquaculture. Better Results.',
-                    style: TextStyle(
-                      color: Colors.grey,
-                      fontSize: 14,
-                    ),
-                  ),
-                ],
-              ),
+                ),
+              ],
             ),
 
             const SizedBox(height: 30),
@@ -711,46 +675,48 @@ class HomeContent extends StatelessWidget {
               decoration: BoxDecoration(
                 gradient: const LinearGradient(
                   colors: [
-                    Color(0xFF075B8A),
+                    Color(0xFF005B96),
                     Color(0xFF18A9D1),
                   ],
                 ),
                 borderRadius: BorderRadius.circular(28),
               ),
               child: const Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment:
+                    CrossAxisAlignment.start,
                 children: [
                   Text(
                     'Healthy Ponds',
                     style: TextStyle(
                       color: Colors.white,
-                      fontSize: 30,
-                      fontWeight: FontWeight.w900,
+                      fontSize: 29,
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
                   Text(
                     'Stronger Shrimp',
                     style: TextStyle(
                       color: Colors.white,
-                      fontSize: 30,
-                      fontWeight: FontWeight.w900,
+                      fontSize: 29,
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
                   Text(
                     'Higher Profits',
                     style: TextStyle(
                       color: Colors.white,
-                      fontSize: 30,
-                      fontWeight: FontWeight.w900,
+                      fontSize: 29,
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
-                  SizedBox(height: 15),
+
+                  SizedBox(height: 18),
+
                   Text(
                     'Complete Aquaculture Solutions\nfor a Better Tomorrow',
                     style: TextStyle(
                       color: Colors.white70,
                       fontSize: 16,
-                      height: 1.5,
                     ),
                   ),
                 ],
@@ -763,80 +729,112 @@ class HomeContent extends StatelessWidget {
               'Aquaculture Solutions',
               style: TextStyle(
                 fontSize: 27,
-                fontWeight: FontWeight.w800,
+                fontWeight: FontWeight.bold,
                 color: darkText,
               ),
             ),
 
-            const SizedBox(height: 18),
+            const SizedBox(height: 20),
 
-            Row(
-              children: [
-                Expanded(
-                  child: solutionCard(
-                    Icons.lightbulb_outline,
-                    'Tip Of The Day',
-                    'Maintain proper dissolved oxygen levels.',
-                  ),
-                ),
-                const SizedBox(width: 15),
-                Expanded(
-                  child: solutionCard(
-                    Icons.menu_book_outlined,
-                    'Shrimp Culture Guide',
-                    'Learn pond setup and management.',
-                  ),
-                ),
-              ],
+            const FeatureCard(
+              icon: Icons.lightbulb_outline,
+              title: 'Tip Of The Day',
+              text:
+                  'Maintain proper dissolved oxygen levels for better shrimp growth.',
+            ),
+
+            const FeatureCard(
+              icon: Icons.menu_book,
+              title: 'Shrimp Culture Guide',
+              text:
+                  'Learn pond setup, management and shrimp culture practices.',
+            ),
+
+            const FeatureCard(
+              icon: Icons.calculate_outlined,
+              title: 'Biomass Calculator',
+              text:
+                  'Calculate shrimp biomass for better feed management.',
+            ),
+
+            const FeatureCard(
+              icon: Icons.health_and_safety_outlined,
+              title: 'Shrimp Diseases',
+              text:
+                  'Learn about common shrimp health and pond management issues.',
             ),
           ],
         ),
       ),
     );
   }
+}
 
-  Widget solutionCard(
-    IconData icon,
-    String title,
-    String description,
-  ) {
+// ============================================================
+// FEATURE CARD
+// ============================================================
+
+class FeatureCard extends StatelessWidget {
+  final IconData icon;
+  final String title;
+  final String text;
+
+  const FeatureCard({
+    super.key,
+    required this.icon,
+    required this.title,
+    required this.text,
+  });
+
+  @override
+  Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(18),
-      height: 190,
+      margin: const EdgeInsets.only(bottom: 16),
+      padding: const EdgeInsets.all(22),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(24),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.04),
-            blurRadius: 15,
-          ),
-        ],
+        borderRadius: BorderRadius.circular(22),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: Row(
         children: [
-          Icon(
-            icon,
-            size: 38,
-            color: marineBlue,
-          ),
-          const SizedBox(height: 15),
-          Text(
-            title,
-            style: const TextStyle(
-              fontSize: 17,
-              fontWeight: FontWeight.w800,
-              color: darkText,
+
+          Container(
+            padding: const EdgeInsets.all(13),
+            decoration: BoxDecoration(
+              color: const Color(0xFFE0F5FA),
+              borderRadius: BorderRadius.circular(15),
+            ),
+            child: Icon(
+              icon,
+              color: marineBlue,
+              size: 30,
             ),
           ),
-          const SizedBox(height: 8),
-          Text(
-            description,
-            style: const TextStyle(
-              fontSize: 13,
-              color: Colors.grey,
-              height: 1.4,
+
+          const SizedBox(width: 18),
+
+          Expanded(
+            child: Column(
+              crossAxisAlignment:
+                  CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: darkText,
+                  ),
+                ),
+                const SizedBox(height: 5),
+                Text(
+                  text,
+                  style: const TextStyle(
+                    fontSize: 14,
+                    color: Colors.grey,
+                  ),
+                ),
+              ],
             ),
           ),
         ],
@@ -854,23 +852,130 @@ class ProductsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const SafeArea(
-      child: Center(
-        child: Text(
-          'Our Products',
-          style: TextStyle(
-            fontSize: 30,
-            fontWeight: FontWeight.bold,
-            color: darkText,
+    return SafeArea(
+      child: GridView.count(
+        padding: const EdgeInsets.all(18),
+        crossAxisCount: 2,
+        crossAxisSpacing: 15,
+        mainAxisSpacing: 15,
+        childAspectRatio: 0.72,
+        children: const [
+          ProductCard(
+            name: 'Marine 6G',
+            image: 'assets/products/marine 6g.png',
           ),
-        ),
+          ProductCard(
+            name: 'Marine Volt-X',
+            image: 'assets/products/volt-x.png',
+          ),
+          ProductCard(
+            name: 'Bio Sludge-X',
+            image: 'assets/products/bio sludge -x.png',
+          ),
+          ProductCard(
+            name: 'Marine ProTab',
+            image: 'assets/products/protab.png',
+          ),
+          ProductCard(
+            name: 'OxyTab Plus',
+            image: 'assets/products/oxytab.png',
+          ),
+          ProductCard(
+            name: 'Free Moult',
+            image: 'assets/products/free moult.png',
+          ),
+          ProductCard(
+            name: 'Red Thunder',
+            image: 'assets/products/red thunder.png',
+          ),
+          ProductCard(
+            name: 'Starmin',
+            image: 'assets/products/starmin.png',
+          ),
+        ],
       ),
     );
   }
 }
 
 // ============================================================
-// SUPPORT PAGE
+// PRODUCT CARD
+// ============================================================
+
+class ProductCard extends StatelessWidget {
+  final String name;
+  final String image;
+
+  const ProductCard({
+    super.key,
+    required this.name,
+    required this.image,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(22),
+      ),
+      child: Column(
+        children: [
+
+          Expanded(
+            child: Image.asset(
+              image,
+              fit: BoxFit.contain,
+              errorBuilder: (_, __, ___) {
+                return const Icon(
+                  Icons.image_not_supported,
+                  size: 55,
+                  color: Colors.grey,
+                );
+              },
+            ),
+          ),
+
+          const SizedBox(height: 8),
+
+          Text(
+            name,
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              fontSize: 17,
+              fontWeight: FontWeight.bold,
+              color: darkText,
+            ),
+          ),
+
+          const SizedBox(height: 8),
+
+          Container(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 15,
+              vertical: 9,
+            ),
+            decoration: BoxDecoration(
+              color: const Color(0xFFE1F5FA),
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: const Text(
+              'View Details',
+              style: TextStyle(
+                color: marineBlue,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ============================================================
+// SUPPORT
 // ============================================================
 
 class SupportPage extends StatelessWidget {
@@ -880,13 +985,31 @@ class SupportPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return const SafeArea(
       child: Center(
-        child: Text(
-          'Support',
-          style: TextStyle(
-            fontSize: 30,
-            fontWeight: FontWeight.bold,
-            color: darkText,
-          ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.support_agent,
+              size: 80,
+              color: marineBlue,
+            ),
+            SizedBox(height: 20),
+            Text(
+              'Support',
+              style: TextStyle(
+                fontSize: 30,
+                fontWeight: FontWeight.bold,
+                color: darkText,
+              ),
+            ),
+            SizedBox(height: 10),
+            Text(
+              'Marine Aqua Technologies Support',
+              style: TextStyle(
+                color: Colors.grey,
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -894,7 +1017,7 @@ class SupportPage extends StatelessWidget {
 }
 
 // ============================================================
-// PROFILE PAGE
+// PROFILE
 // ============================================================
 
 class ProfilePage extends StatelessWidget {
@@ -902,60 +1025,99 @@ class ProfilePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final user = FirebaseAuth.instance.currentUser;
+
     return SafeArea(
       child: Padding(
-        padding: const EdgeInsets.all(24),
+        padding: const EdgeInsets.all(25),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment:
+              CrossAxisAlignment.start,
           children: [
-            const SizedBox(height: 20),
+
+            const SizedBox(height: 25),
 
             const Text(
               'Profile',
               style: TextStyle(
-                fontSize: 32,
-                fontWeight: FontWeight.w800,
+                fontSize: 30,
+                fontWeight: FontWeight.bold,
                 color: darkText,
               ),
             ),
 
-            const SizedBox(height: 25),
+            const SizedBox(height: 30),
 
             Container(
               width: double.infinity,
-              padding: const EdgeInsets.all(22),
+              padding: const EdgeInsets.all(25),
               decoration: BoxDecoration(
                 color: Colors.white,
-                borderRadius: BorderRadius.circular(22),
+                borderRadius: BorderRadius.circular(25),
               ),
-              child: const Column(
+              child: Column(
                 children: [
-                  CircleAvatar(
-                    radius: 38,
-                    backgroundColor: Color(0xFFE2F5FB),
+
+                  const CircleAvatar(
+                    radius: 40,
+                    backgroundColor:
+                        Color(0xFFE1F5FA),
                     child: Icon(
                       Icons.person,
                       size: 45,
                       color: marineBlue,
                     ),
                   ),
-                  SizedBox(height: 15),
-                  Text(
-                    'Mobile User',
+
+                  const SizedBox(height: 20),
+
+                  const Text(
+                    'Mobile Number',
                     style: TextStyle(
-                      fontSize: 21,
+                      color: Colors.grey,
+                      fontSize: 14,
+                    ),
+                  ),
+
+                  const SizedBox(height: 5),
+
+                  Text(
+                    user?.phoneNumber ?? 'Not Available',
+                    style: const TextStyle(
+                      fontSize: 19,
                       fontWeight: FontWeight.bold,
                       color: darkText,
                     ),
                   ),
-                  SizedBox(height: 5),
-                  Text(
-                    'Logged in with mobile number',
-                    style: TextStyle(
-                      color: Colors.grey,
-                    ),
-                  ),
                 ],
+              ),
+            ),
+
+            const Spacer(),
+
+            SizedBox(
+              width: double.infinity,
+              height: 52,
+              child: OutlinedButton(
+                onPressed: () async {
+                  await FirebaseAuth.instance.signOut();
+
+                  if (!context.mounted) return;
+
+                  Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const LoginPage(),
+                    ),
+                    (route) => false,
+                  );
+                },
+                child: const Text(
+                  'Logout',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
               ),
             ),
           ],
