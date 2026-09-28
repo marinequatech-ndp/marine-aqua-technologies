@@ -1,7 +1,5 @@
 name: marine_aqua_technologies
-
 description: Marine Aqua Technologies - Smart Aquaculture. Better Results.
-
 publish_to: "none"
 
 version: 1.0.0+1
@@ -14,11 +12,6 @@ dependencies:
     sdk: flutter
 
   cupertino_icons: ^1.0.8
-
-  # Text to Speech
-  flutter_tts: ^4.2.3
-
-  # Firebase
   firebase_core: ^3.15.2
   firebase_auth: ^5.6.2
 
