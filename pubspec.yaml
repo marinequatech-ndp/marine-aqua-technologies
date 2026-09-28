@@ -26,5 +26,24 @@ flutter:
   uses-material-design: true
 
   assets:
-    - assets/
-    - assets/products/
+    - assets/logo.png
+
+    # HERO
+    - assets/hero_banner.png
+
+    # SHORTCUT CARDS
+    - assets/shortcut_card_1_royyala_sagu_guide.png
+    - assets/shortcut_card_2_biomass_calculator.png
+    - assets/shortcut_card_3_royyala_vyadhulu.png
+
+    # PRODUCTS
+    - assets/bio sludge -x.png
+    - assets/free moult.png
+    - assets/marine 6g.png
+    - assets/white shield.png
+    - assets/oxytab.png
+    - assets/protab.png
+    - assets/red thunder.png
+    - assets/starmin.png
+    - assets/vibrio shield.png
+    - assets/volt-x.png
