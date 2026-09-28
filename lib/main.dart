@@ -25,7 +25,7 @@ class MarineAquaApp extends StatelessWidget {
           seedColor: const Color(0xFF006A91),
         ),
       ),
-      home: const SplashScreen(),
+      home: const LoginScreen(),
     );
   }
 }
