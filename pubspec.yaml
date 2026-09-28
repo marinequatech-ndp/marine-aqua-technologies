@@ -1,5 +1,7 @@
 name: marine_aqua_technologies
-description: Smart Aquaculture. Better Results.
+
+description: Marine Aqua Technologies - Smart Aquaculture. Better Results.
+
 publish_to: "none"
 
 version: 1.0.0+1
@@ -12,13 +14,11 @@ dependencies:
     sdk: flutter
 
   cupertino_icons: ^1.0.8
-  image_picker: ^1.2.0
-  shared_preferences: ^2.5.3
+  flutter_tts: ^4.2.3
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-
   flutter_lints: ^5.0.0
 
 flutter:
