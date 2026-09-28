@@ -1,4 +1,4 @@
-name: Build Marine Aqua Technologies APK
+name: Build APK
 
 on:
   workflow_dispatch:
@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
+      - name: Checkout
         uses: actions/checkout@v4
 
       - name: Setup Java
@@ -26,6 +26,10 @@ jobs:
           flutter-version: '3.35.3'
           channel: stable
           cache: true
+
+      - name: Create Android project files
+        run: |
+          flutter create . --platforms android
 
       - name: Flutter Pub Get
         run: flutter pub get
