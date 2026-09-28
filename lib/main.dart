@@ -5,6 +5,10 @@ void main() {
   runApp(const MarineAquaApp());
 }
 
+/* =========================================================
+   APP
+========================================================= */
+
 class MarineAquaApp extends StatelessWidget {
   const MarineAquaApp({super.key});
 
@@ -16,6 +20,7 @@ class MarineAquaApp extends StatelessWidget {
       theme: ThemeData(
         useMaterial3: true,
         fontFamily: 'Arial',
+        scaffoldBackgroundColor: const Color(0xFFF4FAFD),
         colorScheme: ColorScheme.fromSeed(
           seedColor: const Color(0xFF075985),
         ),
@@ -124,7 +129,8 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final TextEditingController mobileController = TextEditingController();
+  final TextEditingController mobileController =
+      TextEditingController();
 
   bool get isValidMobile {
     return mobileController.text.trim().length == 10;
@@ -140,7 +146,9 @@ class _LoginScreenState extends State<LoginScreen> {
     if (!isValidMobile) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('దయచేసి 10-digit mobile number నమోదు చేయండి'),
+          content: Text(
+            'దయచేసి 10-digit mobile number నమోదు చేయండి',
+          ),
         ),
       );
       return;
@@ -240,14 +248,12 @@ class _LoginScreenState extends State<LoginScreen> {
                 controller: mobileController,
                 keyboardType: TextInputType.phone,
                 maxLength: 10,
-                onChanged: (_) => setState(() {}),
+                onChanged: (_) {
+                  setState(() {});
+                },
                 decoration: InputDecoration(
                   counterText: '',
                   hintText: 'Enter 10-digit number',
-                  hintStyle: const TextStyle(
-                    color: Colors.grey,
-                    fontSize: 16,
-                  ),
                   prefixIcon: const Icon(
                     Icons.phone_android,
                     color: Color(0xFF129BCB),
@@ -299,7 +305,8 @@ class _LoginScreenState extends State<LoginScreen> {
               const SizedBox(height: 50),
 
               const Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                mainAxisAlignment:
+                    MainAxisAlignment.spaceAround,
                 children: [
                   LoginFeature(
                     icon: Icons.verified_user,
@@ -322,6 +329,10 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 }
+
+/* =========================================================
+   LOGIN FEATURE
+========================================================= */
 
 class LoginFeature extends StatelessWidget {
   final IconData icon;
@@ -373,7 +384,8 @@ class OtpScreen extends StatefulWidget {
 }
 
 class _OtpScreenState extends State<OtpScreen> {
-  final TextEditingController otpController = TextEditingController();
+  final TextEditingController otpController =
+      TextEditingController();
 
   bool get isValidOtp {
     return otpController.text.trim().length == 6;
@@ -390,6 +402,17 @@ class _OtpScreenState extends State<OtpScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('6-digit OTP నమోదు చేయండి'),
+        ),
+      );
+      return;
+    }
+
+    // DEMO OTP
+    // Real Firebase OTP later connect cheddam.
+    if (otpController.text.trim() != '123456') {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Demo OTP: 123456'),
         ),
       );
       return;
@@ -419,11 +442,12 @@ class _OtpScreenState extends State<OtpScreen> {
               Align(
                 alignment: Alignment.centerLeft,
                 child: IconButton(
-                  onPressed: () => Navigator.pop(context),
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
                   icon: const Icon(
                     Icons.arrow_back,
                     size: 30,
-                    color: Colors.black87,
                   ),
                 ),
               ),
@@ -435,13 +459,6 @@ class _OtpScreenState extends State<OtpScreen> {
                 width: 120,
                 height: 120,
                 fit: BoxFit.contain,
-                errorBuilder: (_, __, ___) {
-                  return const Icon(
-                    Icons.water,
-                    size: 90,
-                    color: Color(0xFF129BCB),
-                  );
-                },
               ),
 
               const SizedBox(height: 18),
@@ -458,7 +475,8 @@ class _OtpScreenState extends State<OtpScreen> {
               const SizedBox(height: 10),
 
               Text(
-                'Enter the 6-digit OTP sent to\n+91 ${widget.mobileNumber}',
+                'Enter the 6-digit OTP sent to\n'
+                '+91 ${widget.mobileNumber}',
                 textAlign: TextAlign.center,
                 style: const TextStyle(
                   fontSize: 16,
@@ -479,15 +497,12 @@ class _OtpScreenState extends State<OtpScreen> {
                   letterSpacing: 8,
                   fontWeight: FontWeight.bold,
                 ),
-                onChanged: (_) => setState(() {}),
+                onChanged: (_) {
+                  setState(() {});
+                },
                 decoration: InputDecoration(
                   counterText: '',
                   hintText: 'Enter 6-digit OTP',
-                  hintStyle: const TextStyle(
-                    fontSize: 16,
-                    letterSpacing: 0,
-                    color: Colors.grey,
-                  ),
                   filled: true,
                   fillColor: const Color(0xFFF8FCFE),
                   enabledBorder: OutlineInputBorder(
@@ -515,7 +530,8 @@ class _OtpScreenState extends State<OtpScreen> {
                   onPressed: isValidOtp ? verifyOtp : null,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF129BCB),
-                    disabledBackgroundColor: Colors.grey.shade300,
+                    disabledBackgroundColor:
+                        Colors.grey.shade300,
                     foregroundColor: Colors.white,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(30),
@@ -531,7 +547,17 @@ class _OtpScreenState extends State<OtpScreen> {
                 ),
               ),
 
-              const SizedBox(height: 65),
+              const SizedBox(height: 35),
+
+              const Text(
+                'Demo OTP: 123456',
+                style: TextStyle(
+                  color: Colors.grey,
+                  fontSize: 13,
+                ),
+              ),
+
+              const SizedBox(height: 25),
 
               TextButton(
                 onPressed: () {
@@ -587,7 +613,6 @@ class _MainNavigationScreenState
         index: currentIndex,
         children: pages,
       ),
-
       bottomNavigationBar: NavigationBar(
         height: 72,
         selectedIndex: currentIndex,
@@ -631,113 +656,46 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF4FAFD),
-
       body: SafeArea(
         child: CustomScrollView(
           slivers: [
-            SliverToBoxAdapter(
-              child: _HomeHeader(),
+            const SliverToBoxAdapter(
+              child: HomeHeader(),
             ),
 
             SliverPadding(
-              padding: const EdgeInsets.fromLTRB(16, 12, 16, 25),
+              padding: const EdgeInsets.fromLTRB(
+                16,
+                12,
+                16,
+                25,
+              ),
               sliver: SliverList(
                 delegate: SliverChildListDelegate(
                   [
-                    const _HeroBanner(),
+                    const HeroBanner(),
+
+                    const SizedBox(height: 16),
+
+                    const QuickActions(),
 
                     const SizedBox(height: 18),
 
-                    Row(
-                      children: [
-                        Expanded(
-                          child: _HomeCard(
-                            icon: Icons.menu_book,
-                            title: 'రొయ్యల\nసాగు గైడ్',
-                            color: const Color(0xFFE1F3FF),
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: _HomeCard(
-                            icon: Icons.calculate,
-                            title: 'బయోమాస్\nకాలిక్యులేటర్',
-                            color: const Color(0xFFE2F8EA),
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: _HomeCard(
-                            icon: Icons.health_and_safety,
-                            title: 'రొయ్యల\nవ్యాధులు',
-                            color: const Color(0xFFFFE5E5),
-                          ),
-                        ),
-                      ],
-                    ),
-
-                    const SizedBox(height: 22),
-
-                    Row(
-                      mainAxisAlignment:
-                          MainAxisAlignment.spaceBetween,
-                      children: [
-                        const Text(
-                          'మా ప్రొడక్ట్స్',
-                          style: TextStyle(
-                            fontSize: 25,
-                            fontWeight: FontWeight.bold,
-                            color: Color(0xFF064E7A),
-                          ),
-                        ),
-
-                        TextButton(
-                          onPressed: () {},
-                          child: const Text(
-                            'అన్నీ చూడండి →',
-                            style: TextStyle(
-                              color: Color(0xFF075985),
-                              fontSize: 14,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-
-                    const SizedBox(height: 8),
-
-                    SizedBox(
-                      height: 205,
-                      child: ListView(
-                        scrollDirection: Axis.horizontal,
-                        children: const [
-                          ProductCard(
-                            image:
-                                'assets/products/marine 6g.png',
-                            name: 'Marine 6G',
-                          ),
-                          ProductCard(
-                            image:
-                                'assets/products/marine protab.png',
-                            name: 'Marine ProTab',
-                          ),
-                          ProductCard(
-                            image:
-                                'assets/products/marine vibrio shield.png',
-                            name: 'Marine Vibrio Shield',
-                          ),
-                          ProductCard(
-                            image:
-                                'assets/products/marine volt-x.png',
-                            name: 'Marine Volt-X',
-                          ),
-                        ],
-                      ),
-                    ),
+                    const WaterQualitySection(),
 
                     const SizedBox(height: 18),
 
-                    const _TechnicalSupportCard(),
+                    const HomeProductsSection(),
+
+                    const SizedBox(height: 18),
+
+                    const FeaturedProduct(),
+
+                    const SizedBox(height: 18),
+
+                    const TechnicalSupportCard(),
+
+                    const SizedBox(height: 20),
                   ],
                 ),
               ),
@@ -753,11 +711,18 @@ class HomeScreen extends StatelessWidget {
    HOME HEADER
 ========================================================= */
 
-class _HomeHeader extends StatelessWidget {
+class HomeHeader extends StatelessWidget {
+  const HomeHeader({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.fromLTRB(16, 12, 12, 10),
+      padding: const EdgeInsets.fromLTRB(
+        16,
+        12,
+        12,
+        10,
+      ),
       color: Colors.white,
       child: Row(
         children: [
@@ -779,7 +744,8 @@ class _HomeHeader extends StatelessWidget {
 
           const Expanded(
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment:
+                  CrossAxisAlignment.start,
               children: [
                 Text(
                   'MARINE AQUA',
@@ -823,12 +789,14 @@ class _HomeHeader extends StatelessWidget {
             onPressed: () {
               showDialog(
                 context: context,
-                builder: (_) => const AlertDialog(
-                  title: Text('Notifications'),
-                  content: Text(
-                    'ప్రస్తుతం కొత్త notifications ఏమీ లేవు.',
-                  ),
-                ),
+                builder: (_) {
+                  return const AlertDialog(
+                    title: Text('Notifications'),
+                    content: Text(
+                      'ప్రస్తుతం కొత్త notifications ఏమీ లేవు.',
+                    ),
+                  );
+                },
               );
             },
             icon: const Icon(
@@ -845,117 +813,157 @@ class _HomeHeader extends StatelessWidget {
 
 /* =========================================================
    HERO BANNER
+   NO PRODUCT BUTTON
 ========================================================= */
 
-class _HeroBanner extends StatelessWidget {
-  const _HeroBanner();
+class HeroBanner extends StatelessWidget {
+  const HeroBanner({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.fromLTRB(
-        20,
-        20,
-        18,
-        18,
-      ),
+      height: 275,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(25),
-        gradient: const LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            Color(0xFF075985),
-            Color(0xFF129BCB),
-          ],
+        image: const DecorationImage(
+          image: AssetImage(
+            'assets/shrimp_hero.jpg',
+          ),
+          fit: BoxFit.cover,
         ),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text(
-            'ఆరోగ్యకరమైన చెరువులు',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-            ),
+      child: Container(
+        padding: const EdgeInsets.fromLTRB(
+          20,
+          24,
+          18,
+          18,
+        ),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(25),
+          gradient: LinearGradient(
+            begin: Alignment.centerLeft,
+            end: Alignment.centerRight,
+            colors: [
+              Colors.black.withOpacity(0.70),
+              Colors.black.withOpacity(0.40),
+              Colors.transparent,
+            ],
           ),
-
-          const SizedBox(height: 3),
-
-          const Text(
-            'బలమైన రొయ్యలు',
-            style: TextStyle(
-              color: Color(0xFFFFD600),
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-
-          const SizedBox(height: 3),
-
-          const Text(
-            'అధిక లాభాలు',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-
-          const SizedBox(height: 13),
-
-          const Text(
-            'మెరుగైన ఫలితాల కోసం\nసంపూర్ణ ఆక్వాకల్చర్ సొల్యూషన్స్',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 14,
-              height: 1.35,
-            ),
-          ),
-
-          const SizedBox(height: 15),
-
-          ElevatedButton(
-            onPressed: () {},
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.white,
-              foregroundColor: const Color(0xFF064E7A),
-              padding: const EdgeInsets.symmetric(
-                horizontal: 18,
-                vertical: 10,
-              ),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(22),
-              ),
-              elevation: 0,
-            ),
-            child: const Text(
-              'ప్రొడక్ట్స్ చూడండి  →',
+        ),
+        child: const Column(
+          crossAxisAlignment:
+              CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              'ఆరోగ్యకరమైన చెరువులు',
               style: TextStyle(
-                fontSize: 14,
+                color: Colors.white,
+                fontSize: 28,
                 fontWeight: FontWeight.bold,
               ),
             ),
-          ),
-        ],
+
+            SizedBox(height: 4),
+
+            Text(
+              'బలమైన రొయ్యలు',
+              style: TextStyle(
+                color: Color(0xFFFFD600),
+                fontSize: 28,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+
+            Text(
+              'అధిక లాభాలు',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 28,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+
+            SizedBox(height: 14),
+
+            Text(
+              'మెరుగైన ఫలితాల కోసం\n'
+              'సంపూర్ణ ఆక్వాకల్చర్ సొల్యూషన్స్',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 15,
+                height: 1.4,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
 }
 
 /* =========================================================
-   HOME SMALL CARDS
+   QUICK ACTIONS
 ========================================================= */
 
-class _HomeCard extends StatelessWidget {
+class QuickActions extends StatelessWidget {
+  const QuickActions({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Expanded(
+          child: HomeCard(
+            icon: Icons.menu_book,
+            title: 'రొయ్యల\nసాగు గైడ్',
+            color: const Color(0xFFE1F3FF),
+          ),
+        ),
+
+        const SizedBox(width: 8),
+
+        Expanded(
+          child: HomeCard(
+            icon: Icons.calculate,
+            title: 'బయోమాస్\nకాలిక్యులేటర్',
+            color: const Color(0xFFE2F8EA),
+          ),
+        ),
+
+        const SizedBox(width: 8),
+
+        Expanded(
+          child: HomeCard(
+            icon: Icons.health_and_safety,
+            title: 'రొయ్యల\nవ్యాధులు',
+            color: const Color(0xFFFFE5E5),
+          ),
+        ),
+
+        const SizedBox(width: 8),
+
+        Expanded(
+          child: HomeCard(
+            icon: Icons.water_drop,
+            title: 'నీటి\nనిర్వహణ',
+            color: const Color(0xFFFFF2C9),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class HomeCard extends StatelessWidget {
   final IconData icon;
   final String title;
   final Color color;
 
-  const _HomeCard({
+  const HomeCard({
+    super.key,
     required this.icon,
     required this.title,
     required this.color,
@@ -974,7 +982,8 @@ class _HomeCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(19),
       ),
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisAlignment:
+            MainAxisAlignment.center,
         children: [
           Icon(
             icon,
@@ -1001,6 +1010,302 @@ class _HomeCard extends StatelessWidget {
 }
 
 /* =========================================================
+   WATER QUALITY
+========================================================= */
+
+class WaterQualitySection extends StatelessWidget {
+  const WaterQualitySection({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.fromLTRB(
+        14,
+        14,
+        14,
+        16,
+      ),
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          colors: [
+            Color(0xFFDDF5FF),
+            Color(0xFFF0FAFF),
+          ],
+        ),
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(
+          color: const Color(0xFFB5E5FA),
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment:
+            CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Expanded(
+                child: Text(
+                  'చెరువు నీటి పరిస్థితులు',
+                  style: TextStyle(
+                    color: Color(0xFF075078),
+                    fontSize: 23,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+              ),
+
+              const Icon(
+                Icons.edit,
+                color: Color(0xFF0B79B2),
+                size: 20,
+              ),
+            ],
+          ),
+
+          const SizedBox(height: 12),
+
+          Row(
+            children: [
+              Expanded(
+                child: ParameterCard(
+                  icon: Icons.science_outlined,
+                  name: 'pH',
+                  value: '7.8',
+                  unit: '',
+                  range: '6.5 - 8.5',
+                ),
+              ),
+
+              const SizedBox(width: 7),
+
+              Expanded(
+                child: ParameterCard(
+                  icon: Icons.water_outlined,
+                  name: 'Salinity',
+                  value: '18',
+                  unit: 'ppt',
+                  range: '10 - 25',
+                ),
+              ),
+
+              const SizedBox(width: 7),
+
+              Expanded(
+                child: ParameterCard(
+                  icon: Icons.air,
+                  name: 'DO',
+                  value: '5.6',
+                  unit: 'mg/L',
+                  range: '≥ 5.0',
+                ),
+              ),
+
+              const SizedBox(width: 7),
+
+              Expanded(
+                child: ParameterCard(
+                  icon: Icons.science,
+                  name: 'Alkalinity',
+                  value: '140',
+                  unit: 'ppm',
+                  range: '80 - 200',
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class ParameterCard extends StatelessWidget {
+  final IconData icon;
+  final String name;
+  final String value;
+  final String unit;
+  final String range;
+
+  const ParameterCard({
+    super.key,
+    required this.icon,
+    required this.name,
+    required this.value,
+    required this.unit,
+    required this.range,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(
+        horizontal: 5,
+        vertical: 11,
+      ),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(17),
+      ),
+      child: Column(
+        children: [
+          Icon(
+            icon,
+            size: 25,
+            color: const Color(0xFF149AD6),
+          ),
+
+          const SizedBox(height: 4),
+
+          Text(
+            name,
+            style: const TextStyle(
+              color: Color(0xFF075078),
+              fontWeight: FontWeight.bold,
+              fontSize: 11,
+            ),
+          ),
+
+          const SizedBox(height: 2),
+
+          Text(
+            value,
+            style: const TextStyle(
+              color: Color(0xFF075078),
+              fontSize: 21,
+              fontWeight: FontWeight.w800,
+            ),
+          ),
+
+          Text(
+            unit,
+            style: const TextStyle(
+              color: Colors.grey,
+              fontSize: 9,
+            ),
+          ),
+
+          const SizedBox(height: 2),
+
+          Text(
+            '($range)',
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              color: Colors.grey,
+              fontSize: 8,
+            ),
+          ),
+
+          const SizedBox(height: 6),
+
+          Container(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 8,
+              vertical: 3,
+            ),
+            decoration: BoxDecoration(
+              color: const Color(0xFFC8F2D5),
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: const Text(
+              'సరైనది',
+              style: TextStyle(
+                color: Color(0xFF188044),
+                fontSize: 8,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/* =========================================================
+   HOME PRODUCTS
+   NO HORIZONTAL SCROLL
+========================================================= */
+
+class HomeProductsSection extends StatelessWidget {
+  const HomeProductsSection({super.key});
+
+  static const List<Map<String, String>> products = [
+    {
+      'name': 'Marine 6G',
+      'image': 'assets/products/marine 6g.png',
+    },
+    {
+      'name': 'Marine ProTab',
+      'image': 'assets/products/marine protab.png',
+    },
+    {
+      'name': 'Marine Vibrio Shield',
+      'image':
+          'assets/products/marine vibrio shield.png',
+    },
+    {
+      'name': 'Marine Volt-X',
+      'image': 'assets/products/marine volt-x.png',
+    },
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Row(
+          children: [
+            const Text(
+              'మా ప్రొడక్ట్స్',
+              style: TextStyle(
+                color: Color(0xFF064E7A),
+                fontSize: 27,
+                fontWeight: FontWeight.w800,
+              ),
+            ),
+
+            const Spacer(),
+
+            TextButton(
+              onPressed: () {},
+              child: const Text(
+                'అన్ని చూడండి →',
+                style: TextStyle(
+                  color: Color(0xFF0877AC),
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ],
+        ),
+
+        const SizedBox(height: 5),
+
+        GridView.builder(
+          shrinkWrap: true,
+          physics:
+              const NeverScrollableScrollPhysics(),
+          itemCount: products.length,
+          gridDelegate:
+              const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
+            crossAxisSpacing: 10,
+            mainAxisSpacing: 10,
+            childAspectRatio: 0.82,
+          ),
+          itemBuilder: (context, index) {
+            return ProductCard(
+              image: products[index]['image']!,
+              name: products[index]['name']!,
+            );
+          },
+        ),
+      ],
+    );
+  }
+}
+
+/* =========================================================
    PRODUCT CARD
 ========================================================= */
 
@@ -1017,12 +1322,10 @@ class ProductCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 158,
-      margin: const EdgeInsets.only(right: 10),
       padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(18),
+        borderRadius: BorderRadius.circular(20),
         border: Border.all(
           color: const Color(0xFFE0EEF5),
         ),
@@ -1036,14 +1339,14 @@ class ProductCard extends StatelessWidget {
               errorBuilder: (_, __, ___) {
                 return const Icon(
                   Icons.inventory_2,
-                  size: 65,
+                  size: 60,
                   color: Color(0xFF075985),
                 );
               },
             ),
           ),
 
-          const SizedBox(height: 5),
+          const SizedBox(height: 6),
 
           Text(
             name,
@@ -1056,6 +1359,117 @@ class ProductCard extends StatelessWidget {
               color: Color(0xFF064E7A),
             ),
           ),
+
+          const SizedBox(height: 8),
+
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(
+              vertical: 7,
+            ),
+            decoration: BoxDecoration(
+              color: const Color(0xFFE1F4FD),
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: const Text(
+              'View Details',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: Color(0xFF075078),
+                fontSize: 11,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/* =========================================================
+   FEATURED PRODUCT
+========================================================= */
+
+class FeaturedProduct extends StatelessWidget {
+  const FeaturedProduct({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          colors: [
+            Color(0xFFE4F8E9),
+            Color(0xFFF5FFF7),
+          ],
+        ),
+        borderRadius: BorderRadius.circular(24),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 90,
+            height: 90,
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(18),
+            ),
+            child: Image.asset(
+              'assets/products/marine 6g.png',
+              fit: BoxFit.contain,
+            ),
+          ),
+
+          const SizedBox(width: 14),
+
+          const Expanded(
+            child: Column(
+              crossAxisAlignment:
+                  CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'మీ చెరువుకు సరైన పరిష్కారం',
+                  style: TextStyle(
+                    color: Color(0xFF087348),
+                    fontSize: 16,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+
+                SizedBox(height: 4),
+
+                Text(
+                  'నీటి Mineral Balance కోసం',
+                  style: TextStyle(
+                    color: Colors.black87,
+                    fontSize: 12,
+                  ),
+                ),
+
+                SizedBox(height: 2),
+
+                Text(
+                  'Marine 6G',
+                  style: TextStyle(
+                    color: Color(0xFF075078),
+                    fontSize: 21,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+
+                Text(
+                  'చెరువు నీటి నాణ్యతకు మద్దతు',
+                  style: TextStyle(
+                    color: Colors.black87,
+                    fontSize: 11,
+                  ),
+                ),
+              ],
+            ),
+          ),
         ],
       ),
     );
@@ -1066,13 +1480,12 @@ class ProductCard extends StatelessWidget {
    TECHNICAL SUPPORT
 ========================================================= */
 
-class _TechnicalSupportCard extends StatelessWidget {
-  const _TechnicalSupportCard();
+class TechnicalSupportCard extends StatelessWidget {
+  const TechnicalSupportCard({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: double.infinity,
       padding: const EdgeInsets.all(17),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(22),
@@ -1095,7 +1508,8 @@ class _TechnicalSupportCard extends StatelessWidget {
 
           const Expanded(
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment:
+                  CrossAxisAlignment.start,
               children: [
                 Text(
                   'టెక్నికల్ సపోర్ట్',
@@ -1105,7 +1519,9 @@ class _TechnicalSupportCard extends StatelessWidget {
                     color: Color(0xFF064E7A),
                   ),
                 ),
+
                 SizedBox(height: 4),
+
                 Text(
                   'మా నిపుణుల బృందంతో సంప్రదించండి',
                   style: TextStyle(
@@ -1121,14 +1537,17 @@ class _TechnicalSupportCard extends StatelessWidget {
             onPressed: () {},
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.white,
-              foregroundColor: const Color(0xFF075985),
+              foregroundColor:
+                  const Color(0xFF075985),
               elevation: 1,
-              padding: const EdgeInsets.symmetric(
+              padding:
+                  const EdgeInsets.symmetric(
                 horizontal: 14,
                 vertical: 10,
               ),
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(22),
+                borderRadius:
+                    BorderRadius.circular(22),
               ),
             ),
             child: const Text(
@@ -1146,7 +1565,7 @@ class _TechnicalSupportCard extends StatelessWidget {
 }
 
 /* =========================================================
-   PRODUCTS SCREEN
+   PRODUCTS SCREEN - 16 PRODUCTS
 ========================================================= */
 
 class ProductsScreen extends StatelessWidget {
@@ -1171,11 +1590,13 @@ class ProductsScreen extends StatelessWidget {
     },
     {
       'name': 'Marine Vibrio Shield',
-      'image': 'assets/products/marine vibrio shield.png',
+      'image':
+          'assets/products/marine vibrio shield.png',
     },
     {
       'name': 'Marine White Shield',
-      'image': 'assets/products/marine white shield.png',
+      'image':
+          'assets/products/marine white shield.png',
     },
     {
       'name': 'Free Moult',
@@ -1223,7 +1644,6 @@ class ProductsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF4FAFD),
-
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
@@ -1236,7 +1656,6 @@ class ProductsScreen extends StatelessWidget {
           ),
         ),
       ),
-
       body: GridView.builder(
         padding: const EdgeInsets.all(14),
         itemCount: products.length,
@@ -1259,6 +1678,10 @@ class ProductsScreen extends StatelessWidget {
     );
   }
 }
+
+/* =========================================================
+   PRODUCT GRID CARD
+========================================================= */
 
 class ProductGridCard extends StatelessWidget {
   final String name;
@@ -1319,11 +1742,14 @@ class ProductGridCard extends StatelessWidget {
             child: ElevatedButton(
               onPressed: () {},
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFFDFF5FC),
-                foregroundColor: const Color(0xFF064E7A),
+                backgroundColor:
+                    const Color(0xFFDFF5FC),
+                foregroundColor:
+                    const Color(0xFF064E7A),
                 elevation: 0,
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20),
+                  borderRadius:
+                      BorderRadius.circular(20),
                 ),
               ),
               child: const Text(
@@ -1352,7 +1778,6 @@ class SupportScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF4FAFD),
-
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
@@ -1364,7 +1789,6 @@ class SupportScreen extends StatelessWidget {
           ),
         ),
       ),
-
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(18),
         child: Column(
@@ -1376,7 +1800,8 @@ class SupportScreen extends StatelessWidget {
               padding: const EdgeInsets.all(24),
               decoration: BoxDecoration(
                 color: Colors.white,
-                borderRadius: BorderRadius.circular(24),
+                borderRadius:
+                    BorderRadius.circular(24),
               ),
               child: const Column(
                 children: [
@@ -1401,7 +1826,9 @@ class SupportScreen extends StatelessWidget {
                   SizedBox(height: 10),
 
                   Text(
-                    'మీ చెరువు నిర్వహణ, రొయ్యల ఆరోగ్యం మరియు ప్రొడక్ట్ వినియోగంపై సహాయం కోసం మా Technical Support Team ను సంప్రదించండి.',
+                    'మీ చెరువు నిర్వహణ, రొయ్యల ఆరోగ్యం '
+                    'మరియు ప్రొడక్ట్ వినియోగంపై సహాయం కోసం '
+                    'మా Technical Support Team ను సంప్రదించండి.',
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: 14,
@@ -1429,10 +1856,12 @@ class SupportScreen extends StatelessWidget {
                   ),
                 ),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF129BCB),
+                  backgroundColor:
+                      const Color(0xFF129BCB),
                   foregroundColor: Colors.white,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(28),
+                    borderRadius:
+                        BorderRadius.circular(28),
                   ),
                 ),
               ),
@@ -1462,7 +1891,8 @@ class SupportScreen extends StatelessWidget {
                     color: Color(0xFFB7E3EF),
                   ),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(28),
+                    borderRadius:
+                        BorderRadius.circular(28),
                   ),
                 ),
               ),
