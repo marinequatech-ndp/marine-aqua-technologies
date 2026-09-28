@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 
-Future<void> main() async {
+void main() {
   WidgetsFlutterBinding.ensureInitialized();
-
-  try {
-    await Firebase.initializeApp();
-  } catch (e) {
-    debugPrint('Firebase initialization error: $e');
-  }
-
   runApp(const MarineAquaApp());
 }
+
+// ============================================================
+// COLORS
+// ============================================================
+
+const Color marineBlue = Color(0xFF07558A);
+const Color marineDarkBlue = Color(0xFF123F63);
+const Color marineCyan = Color(0xFFDDF5FC);
+const Color backgroundColor = Color(0xFFF4FAFC);
 
 // ============================================================
 // APP
@@ -29,24 +29,14 @@ class MarineAquaApp extends StatelessWidget {
       theme: ThemeData(
         useMaterial3: true,
         fontFamily: 'Arial',
-        scaffoldBackgroundColor: const Color(0xFFF4FAFC),
         colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFF0068A5),
+          seedColor: marineBlue,
         ),
       ),
       home: const SplashScreen(),
     );
   }
 }
-
-// ============================================================
-// COLORS
-// ============================================================
-
-const Color marineBlue = Color(0xFF0068A5);
-const Color marineDarkBlue = Color(0xFF123B5D);
-const Color marineLightBlue = Color(0xFFE4F5FB);
-const Color pageBackground = Color(0xFFF4FAFC);
 
 // ============================================================
 // SPLASH SCREEN
@@ -67,13 +57,10 @@ class _SplashScreenState extends State<SplashScreen> {
     Future.delayed(const Duration(seconds: 2), () {
       if (!mounted) return;
 
-      final user = FirebaseAuth.instance.currentUser;
-
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (_) =>
-              user == null ? const LoginPage() : const MainHomePage(),
+          builder: (_) => const LoginPage(),
         ),
       );
     });
@@ -82,34 +69,35 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: pageBackground,
+      backgroundColor: backgroundColor,
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            // Marine Logo
             Image.asset(
-              'assets/marine_logo.png',
-              width: 150,
-              height: 150,
+              'assets/logo.png',
+              width: 130,
+              height: 130,
               fit: BoxFit.contain,
               errorBuilder: (context, error, stackTrace) {
                 return Container(
                   width: 130,
                   height: 130,
                   decoration: const BoxDecoration(
-                    shape: BoxShape.circle,
                     color: marineBlue,
+                    shape: BoxShape.circle,
                   ),
                   child: const Icon(
                     Icons.water_drop,
-                    size: 70,
                     color: Colors.white,
+                    size: 70,
                   ),
                 );
               },
             ),
 
-            const SizedBox(height: 28),
+            const SizedBox(height: 25),
 
             const Text(
               'Marine Aqua Technologies',
@@ -121,25 +109,13 @@ class _SplashScreenState extends State<SplashScreen> {
               ),
             ),
 
-            const SizedBox(height: 10),
+            const SizedBox(height: 8),
 
             const Text(
               'Smart Aquaculture. Better Results.',
-              textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 14,
                 color: Colors.grey,
-              ),
-            ),
-
-            const SizedBox(height: 35),
-
-            const SizedBox(
-              width: 28,
-              height: 28,
-              child: CircularProgressIndicator(
-                strokeWidth: 3,
-                color: marineBlue,
               ),
             ),
           ],
@@ -161,212 +137,173 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  final TextEditingController mobileController = TextEditingController();
+  final TextEditingController mobileController =
+      TextEditingController();
 
-  bool sendingOtp = false;
-
-  Future<void> sendOtp() async {
+  void sendOtp() {
     String mobile = mobileController.text.trim();
 
     if (mobile.length != 10) {
-      showMessage('Please enter a valid 10-digit mobile number.');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'Please enter a valid 10 digit mobile number',
+          ),
+        ),
+      );
       return;
     }
 
-    setState(() {
-      sendingOtp = true;
-    });
-
-    String phoneNumber = '+91$mobile';
-
-    try {
-      await FirebaseAuth.instance.verifyPhoneNumber(
-        phoneNumber: phoneNumber,
-
-        verificationCompleted: (PhoneAuthCredential credential) async {
-          try {
-            await FirebaseAuth.instance.signInWithCredential(credential);
-
-            if (!mounted) return;
-
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(
-                builder: (_) => const MainHomePage(),
-              ),
-            );
-          } catch (e) {
-            showMessage('Automatic verification failed.');
-          }
-        },
-
-        verificationFailed: (FirebaseAuthException e) {
-          setState(() {
-            sendingOtp = false;
-          });
-
-          showMessage(
-            e.message ?? 'OTP verification failed.',
-          );
-        },
-
-        codeSent: (String verificationId, int? resendToken) {
-          setState(() {
-            sendingOtp = false;
-          });
-
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (_) => OtpPage(
-                verificationId: verificationId,
-                phoneNumber: phoneNumber,
-              ),
-            ),
-          );
-        },
-
-        codeAutoRetrievalTimeout: (String verificationId) {
-          setState(() {
-            sendingOtp = false;
-          });
-        },
-
-        timeout: const Duration(seconds: 60),
-      );
-    } catch (e) {
-      setState(() {
-        sendingOtp = false;
-      });
-
-      showMessage('Unable to send OTP. Please try again.');
-    }
-  }
-
-  void showMessage(String message) {
-    if (!mounted) return;
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        behavior: SnackBarBehavior.floating,
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => OtpPage(
+          mobileNumber: mobile,
+        ),
       ),
     );
   }
 
   @override
+  void dispose() {
+    mobileController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: pageBackground,
-      resizeToAvoidBottomInset: true,
+      backgroundColor: backgroundColor,
       body: SafeArea(
         child: SingleChildScrollView(
-          physics: const NeverScrollableScrollPhysics(),
           padding: const EdgeInsets.symmetric(
-            horizontal: 28,
-            vertical: 35,
+            horizontal: 32,
+            vertical: 45,
           ),
-          child: SizedBox(
-            height: MediaQuery.of(context).size.height - 70,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Image.asset(
-                  'assets/marine_logo.png',
-                  width: 105,
-                  height: 105,
-                  fit: BoxFit.contain,
-                  errorBuilder: (context, error, stackTrace) {
-                    return const Icon(
-                      Icons.water_drop,
-                      size: 90,
+          child: Column(
+            children: [
+              const SizedBox(height: 25),
+
+              Image.asset(
+                'assets/logo.png',
+                width: 125,
+                height: 125,
+                fit: BoxFit.contain,
+                errorBuilder: (context, error, stackTrace) {
+                  return Container(
+                    width: 125,
+                    height: 125,
+                    decoration: const BoxDecoration(
                       color: marineBlue,
-                    );
-                  },
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(
+                      Icons.water_drop,
+                      color: Colors.white,
+                      size: 65,
+                    ),
+                  );
+                },
+              ),
+
+              const SizedBox(height: 20),
+
+              const Text(
+                'Welcome',
+                style: TextStyle(
+                  fontSize: 44,
+                  fontWeight: FontWeight.bold,
+                  color: marineDarkBlue,
                 ),
+              ),
 
-                const SizedBox(height: 25),
+              const SizedBox(height: 8),
 
-                const Text(
-                  'Welcome',
-                  style: TextStyle(
-                    fontSize: 42,
-                    fontWeight: FontWeight.bold,
-                    color: marineDarkBlue,
-                  ),
+              const Text(
+                'Marine Aqua Technologies',
+                style: TextStyle(
+                  fontSize: 20,
+                  color: Colors.grey,
                 ),
+              ),
 
-                const SizedBox(height: 8),
+              const SizedBox(height: 60),
 
-                const Text(
-                  'Marine Aqua Technologies',
-                  style: TextStyle(
-                    fontSize: 20,
-                    color: Colors.grey,
-                  ),
+              // MOBILE NUMBER
+              Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(28),
                 ),
-
-                const SizedBox(height: 55),
-
-                Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(30),
+                child: TextField(
+                  controller: mobileController,
+                  keyboardType: TextInputType.phone,
+                  maxLength: 10,
+                  style: const TextStyle(
+                    fontSize: 21,
                   ),
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 22,
-                  ),
-                  child: TextField(
-                    controller: mobileController,
-                    keyboardType: TextInputType.phone,
-                    maxLength: 10,
-                    decoration: const InputDecoration(
-                      counterText: '',
-                      border: InputBorder.none,
-                      icon: Icon(
-                        Icons.phone_android,
-                        color: marineBlue,
-                      ),
-                      prefixText: '+91  ',
-                      prefixStyle: TextStyle(
-                        fontSize: 19,
-                        fontWeight: FontWeight.bold,
-                        color: marineDarkBlue,
-                      ),
-                      hintText: 'Mobile Number',
+                  decoration: const InputDecoration(
+                    counterText: '',
+                    border: InputBorder.none,
+                    prefixIcon: Icon(
+                      Icons.phone_android,
+                      color: marineBlue,
+                      size: 30,
+                    ),
+                    prefixText: '+91  ',
+                    prefixStyle: TextStyle(
+                      color: marineDarkBlue,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 20,
+                    ),
+                    hintText: 'Mobile Number',
+                    hintStyle: TextStyle(
+                      color: Colors.grey,
+                    ),
+                    contentPadding: EdgeInsets.symmetric(
+                      vertical: 22,
+                      horizontal: 15,
                     ),
                   ),
                 ),
+              ),
 
-                const SizedBox(height: 22),
+              const SizedBox(height: 28),
 
-                SizedBox(
-                  width: double.infinity,
-                  height: 64,
-                  child: ElevatedButton(
-                    onPressed: sendingOtp ? null : sendOtp,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: marineBlue,
-                      foregroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(25),
-                      ),
+              // SEND OTP
+              SizedBox(
+                width: double.infinity,
+                height: 64,
+                child: ElevatedButton(
+                  onPressed: sendOtp,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: marineBlue,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30),
                     ),
-                    child: sendingOtp
-                        ? const CircularProgressIndicator(
-                            color: Colors.white,
-                          )
-                        : const Text(
-                            'SEND OTP',
-                            style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
+                    elevation: 3,
+                  ),
+                  child: const Text(
+                    'SEND OTP',
+                    style: TextStyle(
+                      fontSize: 21,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
-              ],
-            ),
+              ),
+
+              const SizedBox(height: 40),
+
+              const Text(
+                'Login using your mobile number',
+                style: TextStyle(
+                  color: Colors.grey,
+                  fontSize: 14,
+                ),
+              ),
+            ],
           ),
         ),
       ),
@@ -379,13 +316,11 @@ class _LoginPageState extends State<LoginPage> {
 // ============================================================
 
 class OtpPage extends StatefulWidget {
-  final String verificationId;
-  final String phoneNumber;
+  final String mobileNumber;
 
   const OtpPage({
     super.key,
-    required this.verificationId,
-    required this.phoneNumber,
+    required this.mobileNumber,
   });
 
   @override
@@ -393,103 +328,80 @@ class OtpPage extends StatefulWidget {
 }
 
 class _OtpPageState extends State<OtpPage> {
-  final TextEditingController otpController = TextEditingController();
+  final TextEditingController otpController =
+      TextEditingController();
 
-  bool verifying = false;
-
-  Future<void> verifyOtp() async {
+  void verifyOtp() {
     String otp = otpController.text.trim();
 
     if (otp.length != 6) {
-      showMessage('Please enter the 6-digit OTP.');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please enter 6 digit OTP'),
+        ),
+      );
       return;
     }
 
-    setState(() {
-      verifying = true;
-    });
-
-    try {
-      PhoneAuthCredential credential =
-          PhoneAuthProvider.credential(
-        verificationId: widget.verificationId,
-        smsCode: otp,
-      );
-
-      await FirebaseAuth.instance.signInWithCredential(
-        credential,
-      );
-
-      if (!mounted) return;
-
+    // Temporary demo OTP verification.
+    // Real Firebase OTP will be connected later.
+    if (otp == '123456') {
       Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(
-          builder: (_) => const MainHomePage(),
+          builder: (_) => const MainNavigation(),
         ),
         (route) => false,
       );
-    } on FirebaseAuthException catch (e) {
-      setState(() {
-        verifying = false;
-      });
-
-      showMessage(
-        e.message ?? 'Invalid OTP.',
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'Invalid OTP. For testing use 123456',
+          ),
+        ),
       );
-    } catch (e) {
-      setState(() {
-        verifying = false;
-      });
-
-      showMessage('OTP verification failed.');
     }
   }
 
-  void showMessage(String message) {
-    if (!mounted) return;
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        behavior: SnackBarBehavior.floating,
-      ),
-    );
+  @override
+  void dispose() {
+    otpController.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: pageBackground,
+      backgroundColor: backgroundColor,
       appBar: AppBar(
-        backgroundColor: pageBackground,
+        backgroundColor: backgroundColor,
         elevation: 0,
-        leading: IconButton(
-          icon: const Icon(
-            Icons.arrow_back,
-            color: marineDarkBlue,
-          ),
-          onPressed: () {
-            Navigator.pop(context);
-          },
+        iconTheme: const IconThemeData(
+          color: marineDarkBlue,
         ),
       ),
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: 28,
-          ),
+          padding: const EdgeInsets.all(32),
           child: Column(
             children: [
-              const SizedBox(height: 55),
+              const SizedBox(height: 25),
 
-              const Icon(
-                Icons.sms_outlined,
-                size: 85,
-                color: marineBlue,
+              Image.asset(
+                'assets/logo.png',
+                width: 100,
+                height: 100,
+                errorBuilder: (context, error, stackTrace) {
+                  return const Icon(
+                    Icons.water_drop,
+                    color: marineBlue,
+                    size: 90,
+                  );
+                },
               ),
 
-              const SizedBox(height: 25),
+              const SizedBox(height: 30),
 
               const Text(
                 'Verify OTP',
@@ -503,11 +415,11 @@ class _OtpPageState extends State<OtpPage> {
               const SizedBox(height: 12),
 
               Text(
-                'OTP sent to ${widget.phoneNumber}',
+                'OTP sent to +91 ${widget.mobileNumber}',
                 textAlign: TextAlign.center,
                 style: const TextStyle(
-                  fontSize: 16,
                   color: Colors.grey,
+                  fontSize: 16,
                 ),
               ),
 
@@ -526,41 +438,55 @@ class _OtpPageState extends State<OtpPage> {
                   style: const TextStyle(
                     fontSize: 28,
                     fontWeight: FontWeight.bold,
-                    letterSpacing: 8,
+                    letterSpacing: 10,
                   ),
                   decoration: const InputDecoration(
                     counterText: '',
-                    hintText: '------',
                     border: InputBorder.none,
+                    hintText: '••••••',
+                    contentPadding: EdgeInsets.symmetric(
+                      vertical: 20,
+                    ),
                   ),
                 ),
               ),
 
-              const SizedBox(height: 25),
+              const SizedBox(height: 30),
 
               SizedBox(
                 width: double.infinity,
                 height: 62,
                 child: ElevatedButton(
-                  onPressed: verifying ? null : verifyOtp,
+                  onPressed: verifyOtp,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: marineBlue,
                     foregroundColor: Colors.white,
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(25),
+                      borderRadius: BorderRadius.circular(30),
                     ),
                   ),
-                  child: verifying
-                      ? const CircularProgressIndicator(
-                          color: Colors.white,
-                        )
-                      : const Text(
-                          'VERIFY OTP',
-                          style: TextStyle(
-                            fontSize: 19,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
+                  child: const Text(
+                    'VERIFY OTP',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 20),
+
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: const Text(
+                  'Change Mobile Number',
+                  style: TextStyle(
+                    color: marineBlue,
+                    fontSize: 16,
+                  ),
                 ),
               ),
             ],
@@ -572,17 +498,17 @@ class _OtpPageState extends State<OtpPage> {
 }
 
 // ============================================================
-// MAIN HOME PAGE
+// MAIN NAVIGATION
 // ============================================================
 
-class MainHomePage extends StatefulWidget {
-  const MainHomePage({super.key});
+class MainNavigation extends StatefulWidget {
+  const MainNavigation({super.key});
 
   @override
-  State<MainHomePage> createState() => _MainHomePageState();
+  State<MainNavigation> createState() => _MainNavigationState();
 }
 
-class _MainHomePageState extends State<MainHomePage> {
+class _MainNavigationState extends State<MainNavigation> {
   int currentIndex = 0;
 
   final List<Widget> pages = const [
@@ -595,41 +521,32 @@ class _MainHomePageState extends State<MainHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: IndexedStack(
-        index: currentIndex,
-        children: pages,
-      ),
-
+      body: pages[currentIndex],
       bottomNavigationBar: NavigationBar(
         selectedIndex: currentIndex,
-        backgroundColor: Colors.white,
-        indicatorColor: marineLightBlue,
-
         onDestinationSelected: (index) {
           setState(() {
             currentIndex = index;
           });
         },
-
+        backgroundColor: Colors.white,
+        indicatorColor: marineCyan,
         destinations: const [
           NavigationDestination(
             icon: Icon(Icons.home_outlined),
             selectedIcon: Icon(Icons.home),
             label: 'Home',
           ),
-
           NavigationDestination(
             icon: Icon(Icons.inventory_2_outlined),
             selectedIcon: Icon(Icons.inventory_2),
             label: 'Products',
           ),
-
           NavigationDestination(
             icon: Icon(Icons.support_agent_outlined),
             selectedIcon: Icon(Icons.support_agent),
             label: 'Support',
           ),
-
           NavigationDestination(
             icon: Icon(Icons.person_outline),
             selectedIcon: Icon(Icons.person),
@@ -651,158 +568,159 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: pageBackground,
-      appBar: AppBar(
-        backgroundColor: pageBackground,
-        elevation: 0,
-        title: const Text(
-          'Marine Aqua Technologies',
-          style: TextStyle(
-            color: marineDarkBlue,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              'Smart Aquaculture',
-              style: TextStyle(
-                fontSize: 30,
-                fontWeight: FontWeight.bold,
-                color: marineDarkBlue,
+      backgroundColor: backgroundColor,
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(22),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(height: 15),
+
+              const Text(
+                'Marine Aqua Technologies',
+                style: TextStyle(
+                  fontSize: 28,
+                  fontWeight: FontWeight.bold,
+                  color: marineDarkBlue,
+                ),
               ),
-            ),
 
-            const SizedBox(height: 8),
+              const SizedBox(height: 6),
 
-            const Text(
-              'Better Results.',
-              style: TextStyle(
-                fontSize: 22,
-                color: marineBlue,
-                fontWeight: FontWeight.w600,
+              const Text(
+                'Smart Aquaculture. Better Results.',
+                style: TextStyle(
+                  color: Colors.grey,
+                  fontSize: 16,
+                ),
               ),
-            ),
 
-            const SizedBox(height: 25),
+              const SizedBox(height: 30),
 
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(25),
-              decoration: BoxDecoration(
-                color: marineBlue,
-                borderRadius: BorderRadius.circular(25),
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(24),
+                decoration: BoxDecoration(
+                  color: marineBlue,
+                  borderRadius: BorderRadius.circular(25),
+                ),
+                child: const Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Welcome to',
+                      style: TextStyle(
+                        color: Colors.white70,
+                        fontSize: 17,
+                      ),
+                    ),
+                    SizedBox(height: 8),
+                    Text(
+                      'Marine Aqua Technologies',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 25,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    SizedBox(height: 12),
+                    Text(
+                      'Your trusted partner in aquaculture solutions.',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 15,
+                      ),
+                    ),
+                  ],
+                ),
               ),
-              child: const Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+
+              const SizedBox(height: 30),
+
+              const Text(
+                'Explore Our Products',
+                style: TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                  color: marineDarkBlue,
+                ),
+              ),
+
+              const SizedBox(height: 15),
+
+              Row(
                 children: [
-                  Text(
-                    'MARINE AQUA TECHNOLOGIES',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
+                  Expanded(
+                    child: _homeCard(
+                      Icons.inventory_2,
+                      'Products',
+                      () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const ProductsPage(),
+                          ),
+                        );
+                      },
                     ),
                   ),
-                  SizedBox(height: 15),
-                  Text(
-                    'ఆక్వా సాగులో ప్రతి దశలో…\nమీకు తోడుగా Marine Aqua Technologies',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 17,
-                      height: 1.5,
+                  const SizedBox(width: 15),
+                  Expanded(
+                    child: _homeCard(
+                      Icons.support_agent,
+                      'Support',
+                      () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const SupportPage(),
+                          ),
+                        );
+                      },
                     ),
                   ),
                 ],
               ),
-            ),
-
-            const SizedBox(height: 30),
-
-            const Text(
-              'Our Products',
-              style: TextStyle(
-                fontSize: 25,
-                fontWeight: FontWeight.bold,
-                color: marineDarkBlue,
-              ),
-            ),
-
-            const SizedBox(height: 15),
-
-            const ProductPreview(
-              name: 'Marine 6G',
-              image: 'assets/products/marine 6g.png',
-            ),
-
-            const SizedBox(height: 15),
-
-            const ProductPreview(
-              name: 'Marine Volt-X',
-              image: 'assets/products/volt-x.png',
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
   }
-}
 
-// ============================================================
-// PRODUCT PREVIEW
-// ============================================================
-
-class ProductPreview extends StatelessWidget {
-  final String name;
-  final String image;
-
-  const ProductPreview({
-    super.key,
-    required this.name,
-    required this.image,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(18),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(22),
-      ),
-      child: Row(
-        children: [
-          Image.asset(
-            image,
-            width: 90,
-            height: 90,
-            fit: BoxFit.contain,
-            errorBuilder: (_, __, ___) {
-              return const Icon(
-                Icons.inventory_2,
-                size: 70,
-                color: marineBlue,
-              );
-            },
-          ),
-
-          const SizedBox(width: 18),
-
-          Expanded(
-            child: Text(
-              name,
+  Widget _homeCard(
+    IconData icon,
+    String title,
+    VoidCallback onTap,
+  ) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(20),
+      child: Container(
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Column(
+          children: [
+            Icon(
+              icon,
+              color: marineBlue,
+              size: 42,
+            ),
+            const SizedBox(height: 12),
+            Text(
+              title,
               style: const TextStyle(
-                fontSize: 21,
-                fontWeight: FontWeight.bold,
                 color: marineDarkBlue,
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -814,19 +732,13 @@ class ProductPreview extends StatelessWidget {
 
 class Product {
   final String name;
-  final String category;
   final String image;
   final String description;
-  final String composition;
-  final String dosage;
 
   const Product({
     required this.name,
-    required this.category,
     required this.image,
     required this.description,
-    required this.composition,
-    required this.dosage,
   });
 }
 
@@ -837,194 +749,99 @@ class Product {
 const List<Product> products = [
   Product(
     name: 'Marine 6G',
-    category: 'Liquid Minerals',
     image: 'assets/products/marine 6g.png',
     description:
-        'Liquid mineral support for shrimp mineral balance, moulting and shell formation.',
-    composition:
-        'Liquid mineral blend.',
-    dosage:
-        'Use as recommended based on pond condition and culture requirement.',
+        'Liquid Minerals designed to support mineral balance, shell formation and moulting management in aquaculture ponds.',
   ),
-
   Product(
     name: 'Marine Volt-X',
-    category: 'Growth Support',
     image: 'assets/products/volt-x.png',
     description:
-        'Growth support formulation designed to support feed utilization, growth and shrimp performance.',
-    composition:
-        'Essential amino acids and Beta Glucan immune supporters.',
-    dosage:
-        '5 ml per 1 kg feed daily.',
+        'Growth support formulation containing Essential Amino Acids and Beta Glucan immune support components.',
   ),
-
   Product(
     name: 'Bio Sludge-X',
-    category: 'Sludge Management',
     image: 'assets/products/bio sludge -x.png',
     description:
-        'Supports organic sludge management and helps improve pond bottom conditions.',
-    composition:
-        'Nitrifying bacterial complex and enzyme activation system.',
-    dosage:
-        'Use according to pond condition and recommended application.',
+        'Nitrifying bacterial complex with enzyme activation system for organic sludge and pond management.',
   ),
-
   Product(
     name: 'Marine ProTab',
-    category: 'Probiotic Tablets',
     image: 'assets/products/protab.png',
     description:
-        'Probiotic tablet support for maintaining beneficial microbial balance in shrimp ponds.',
-    composition:
-        'Mannan Oligosaccharides and Beta Glucans.',
-    dosage:
-        '500 g per acre. Apply after Vibrio Shield as recommended.',
+        'Probiotic tablets containing Mannan Oligosaccharides and Beta Glucans for aquaculture pond management.',
   ),
-
   Product(
     name: 'Marine Vibrio Shield',
-    category: 'Vibrio Control',
     image: 'assets/products/vibrio shield.png',
     description:
-        'Pond management product designed to support Vibrio control and improve pond microbial balance.',
-    composition:
-        'Vibrio management formulation.',
-    dosage:
-        '1 L per acre.',
+        'Vibrio management product designed for aquaculture pond applications.',
   ),
-
   Product(
     name: 'Marine White Shield',
-    category: 'Shrimp Health',
     image: 'assets/products/white shield.png',
     description:
-        'Supports shrimp health and pond management during challenging culture conditions.',
-    composition:
-        'Specialized aquaculture formulation.',
-    dosage:
-        'Use according to pond condition and recommended dosage.',
+        'Aquaculture support product designed for white gut and related pond management requirements.',
   ),
-
   Product(
     name: 'OxyTab Plus',
-    category: 'Oxygen Support',
     image: 'assets/products/oxytab.png',
     description:
-        'Oxygen support tablets for aquaculture ponds.',
-    composition:
-        'Sodium Percarbonate based oxygen releasing formulation.',
-    dosage:
-        'Apply according to pond oxygen requirement and product recommendation.',
+        'Oxygen support tablets containing Sodium Percarbonate for controlled oxygen release in pond water.',
   ),
-
   Product(
     name: 'Free Moult',
-    category: 'Moulting Support',
     image: 'assets/products/free moult.png',
     description:
-        'Advanced moulting support for shrimp culture.',
-    composition:
-        'Mineral and moulting support formulation.',
-    dosage:
-        'Use according to culture stage and recommended application.',
+        'Advanced moulting support formulation for shrimp farming.',
   ),
-
   Product(
     name: 'Red Thunder',
-    category: 'Growth & Health',
     image: 'assets/products/red thunder.png',
     description:
-        'Aquaculture support formulation designed for shrimp performance and culture management.',
-    composition:
-        'Specialized aquaculture formulation.',
-    dosage:
-        'Use as recommended.',
+        'Aquaculture pond support formulation for shrimp farming.',
   ),
-
   Product(
     name: 'Zeoneem',
-    category: 'Pond Management',
     image: 'assets/products/zeoneem.png',
     description:
-        'Granular pond management product for maintaining favorable pond conditions.',
-    composition:
-        'Granular pond management formulation.',
-    dosage:
-        'Use according to pond condition and recommended dosage.',
+        'Granular pond management product designed for aquaculture applications.',
   ),
-
   Product(
     name: 'Starmin',
-    category: 'Mineral Support',
     image: 'assets/products/starmin.png',
     description:
-        'Mineral support product for shrimp culture and pond mineral management.',
-    composition:
-        'Aquaculture mineral formulation.',
-    dosage:
-        'Use as recommended.',
+        'Mineral and nutritional support product for shrimp farming.',
   ),
-
   Product(
     name: 'Nutrimin',
-    category: 'Chelated Minerals',
     image: 'assets/products/nutrimin.png',
     description:
-        'Chelated mineral support for shrimp culture.',
-    composition:
-        'Chelated mineral blend.',
-    dosage:
-        'Use according to culture requirement and recommended dosage.',
+        'Chelated mineral formulation designed for aquaculture mineral supplementation.',
   ),
-
   Product(
     name: 'Bio Soil',
-    category: 'Soil Fertility Enhancer',
     image: 'assets/products/bio soil.png',
     description:
-        'Soil fertility enhancer for aquaculture pond bottom management.',
-    composition:
-        'Soil and pond management formulation.',
-    dosage:
-        'Use according to pond soil condition and recommendation.',
+        'Soil fertility enhancer designed for aquaculture pond soil management.',
   ),
-
   Product(
     name: 'Chlorides',
-    category: 'Mineral Management',
     image: 'assets/products/chlorides.png',
     description:
-        'Chloride mineral support for maintaining appropriate ionic balance in aquaculture ponds.',
-    composition:
-        'Chloride mineral formulation.',
-    dosage:
-        'Use based on water analysis and recommended application.',
+        'Chloride mineral products for aquaculture pond mineral management.',
   ),
-
   Product(
     name: 'Yucca Pro',
-    category: 'Toxin Binder',
     image: 'assets/products/yucca pro.png',
     description:
-        'Toxin-binding and pond management support product.',
-    composition:
-        'Yucca-based toxin binder formulation.',
-    dosage:
-        'Use according to pond condition and recommended dosage.',
+        'Toxin binder product for aquaculture pond management.',
   ),
-
   Product(
     name: 'Hi-Soft',
-    category: 'Aquaculture Support',
     image: 'assets/products/hi-soft.png',
     description:
-        'Aquaculture support product for shrimp pond management.',
-    composition:
-        'Specialized aquaculture formulation.',
-    dosage:
-        'Use according to culture requirement and recommendation.',
+        'Aquaculture support product for pond and shrimp farming applications.',
   ),
 ];
 
@@ -1038,42 +855,71 @@ class ProductsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: pageBackground,
+      backgroundColor: backgroundColor,
+      body: SafeArea(
+        child: CustomScrollView(
+          slivers: [
+            SliverPadding(
+              padding: const EdgeInsets.fromLTRB(
+                20,
+                25,
+                20,
+                10,
+              ),
+              sliver: SliverToBoxAdapter(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: const [
+                    Text(
+                      'Our Products',
+                      style: TextStyle(
+                        fontSize: 34,
+                        fontWeight: FontWeight.bold,
+                        color: marineDarkBlue,
+                      ),
+                    ),
+                    SizedBox(height: 6),
+                    Text(
+                      'Marine Aqua Technologies',
+                      style: TextStyle(
+                        fontSize: 17,
+                        color: Colors.grey,
+                      ),
+                    ),
+                    SizedBox(height: 20),
+                  ],
+                ),
+              ),
+            ),
 
-      appBar: AppBar(
-        backgroundColor: pageBackground,
-        elevation: 0,
-        title: const Text(
-          'Our Products',
-          style: TextStyle(
-            color: marineDarkBlue,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-      ),
+            SliverPadding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 18,
+              ),
+              sliver: SliverGrid(
+                delegate: SliverChildBuilderDelegate(
+                  (context, index) {
+                    return ProductCard(
+                      product: products[index],
+                    );
+                  },
+                  childCount: products.length,
+                ),
+                gridDelegate:
+                    const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  crossAxisSpacing: 14,
+                  mainAxisSpacing: 14,
+                  childAspectRatio: 0.72,
+                ),
+              ),
+            ),
 
-      body: GridView.builder(
-        padding: const EdgeInsets.fromLTRB(
-          16,
-          10,
-          16,
-          30,
+            const SliverToBoxAdapter(
+              child: SizedBox(height: 25),
+            ),
+          ],
         ),
-        itemCount: products.length,
-        gridDelegate:
-            const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2,
-          crossAxisSpacing: 14,
-          mainAxisSpacing: 14,
-          childAspectRatio: 0.68,
-        ),
-        itemBuilder: (context, index) {
-          final product = products[index];
-
-          return ProductCard(
-            product: product,
-          );
-        },
       ),
     );
   }
@@ -1097,10 +943,10 @@ class ProductCard extends StatelessWidget {
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(25),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withOpacity(0.04),
             blurRadius: 8,
             offset: const Offset(0, 3),
           ),
@@ -1109,20 +955,27 @@ class ProductCard extends StatelessWidget {
       child: Column(
         children: [
           Expanded(
-            child: Image.asset(
-              product.image,
-              fit: BoxFit.contain,
-              errorBuilder: (_, __, ___) {
-                return const Icon(
-                  Icons.inventory_2_outlined,
-                  size: 75,
-                  color: marineBlue,
-                );
-              },
+            child: Padding(
+              padding: const EdgeInsets.all(5),
+              child: Image.asset(
+                product.image,
+                fit: BoxFit.contain,
+                errorBuilder: (
+                  context,
+                  error,
+                  stackTrace,
+                ) {
+                  return const Icon(
+                    Icons.inventory_2,
+                    size: 75,
+                    color: marineBlue,
+                  );
+                },
+              ),
             ),
           ),
 
-          const SizedBox(height: 8),
+          const SizedBox(height: 5),
 
           Text(
             product.name,
@@ -1130,7 +983,7 @@ class ProductCard extends StatelessWidget {
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
             style: const TextStyle(
-              fontSize: 18,
+              fontSize: 17,
               fontWeight: FontWeight.bold,
               color: marineDarkBlue,
             ),
@@ -1153,11 +1006,11 @@ class ProductCard extends StatelessWidget {
                 );
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: marineLightBlue,
-                foregroundColor: marineBlue,
+                backgroundColor: marineCyan,
+                foregroundColor: marineDarkBlue,
                 elevation: 0,
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(22),
+                  borderRadius: BorderRadius.circular(25),
                 ),
               ),
               child: const Text(
@@ -1186,90 +1039,39 @@ class ProductDetailsPage extends StatelessWidget {
     required this.product,
   });
 
-  Widget infoCard(
-    IconData icon,
-    String title,
-    String text,
-  ) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(22),
-      margin: const EdgeInsets.only(bottom: 18),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(25),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Icon(
-                icon,
-                color: marineBlue,
-                size: 30,
-              ),
-              const SizedBox(width: 12),
-              Text(
-                title,
-                style: const TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.bold,
-                  color: marineBlue,
-                ),
-              ),
-            ],
-          ),
-
-          const SizedBox(height: 15),
-
-          Text(
-            text,
-            style: const TextStyle(
-              fontSize: 17,
-              height: 1.55,
-              color: Colors.grey,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: pageBackground,
-
+      backgroundColor: backgroundColor,
       appBar: AppBar(
-        backgroundColor: pageBackground,
+        title: Text(product.name),
+        backgroundColor: backgroundColor,
+        foregroundColor: marineDarkBlue,
         elevation: 0,
-        title: Text(
-          product.name,
-          style: const TextStyle(
-            color: marineDarkBlue,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
       ),
-
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.all(22),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Container(
-              height: 330,
               width: double.infinity,
+              height: 300,
+              padding: const EdgeInsets.all(25),
               decoration: BoxDecoration(
                 color: Colors.white,
-                borderRadius: BorderRadius.circular(30),
+                borderRadius: BorderRadius.circular(28),
               ),
               child: Image.asset(
                 product.image,
                 fit: BoxFit.contain,
-                errorBuilder: (_, __, ___) {
+                errorBuilder: (
+                  context,
+                  error,
+                  stackTrace,
+                ) {
                   return const Icon(
-                    Icons.inventory_2_outlined,
+                    Icons.inventory_2,
                     size: 100,
                     color: marineBlue,
                   );
@@ -1277,62 +1079,62 @@ class ProductDetailsPage extends StatelessWidget {
               ),
             ),
 
-            const SizedBox(height: 22),
+            const SizedBox(height: 25),
 
-            Align(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                product.name,
-                style: const TextStyle(
-                  fontSize: 34,
-                  fontWeight: FontWeight.bold,
-                  color: marineDarkBlue,
-                ),
+            Text(
+              product.name,
+              style: const TextStyle(
+                fontSize: 30,
+                fontWeight: FontWeight.bold,
+                color: marineDarkBlue,
               ),
             ),
 
-            const SizedBox(height: 8),
+            const SizedBox(height: 18),
 
-            Align(
-              alignment: Alignment.centerLeft,
-              child: Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 18,
-                  vertical: 10,
-                ),
-                decoration: BoxDecoration(
-                  color: marineLightBlue,
-                  borderRadius: BorderRadius.circular(25),
-                ),
-                child: Text(
-                  product.category,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: marineBlue,
-                  ),
-                ),
+            const Text(
+              'Product Details',
+              style: TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
+                color: marineBlue,
+              ),
+            ),
+
+            const SizedBox(height: 10),
+
+            Text(
+              product.description,
+              style: const TextStyle(
+                fontSize: 17,
+                height: 1.6,
+                color: Colors.black87,
               ),
             ),
 
             const SizedBox(height: 25),
 
-            infoCard(
-              Icons.description_outlined,
-              'Description',
-              product.description,
-            ),
-
-            infoCard(
-              Icons.science_outlined,
-              'Composition',
-              product.composition,
-            ),
-
-            infoCard(
-              Icons.medication_outlined,
-              'Dosage',
-              product.dosage,
+            // Full matter from your product document
+            // can be placed here product-wise.
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(18),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: const Text(
+                'Benefits\n\n'
+                '• Supports aquaculture pond management\n'
+                '• Designed for shrimp farming applications\n'
+                '• Use according to the recommended product dosage\n\n'
+                'Dosage\n\n'
+                'Please follow the product label and recommended technical guidance.',
+                style: TextStyle(
+                  fontSize: 16,
+                  height: 1.6,
+                ),
+              ),
             ),
           ],
         ),
@@ -1351,132 +1153,93 @@ class SupportPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: pageBackground,
-
+      backgroundColor: backgroundColor,
       appBar: AppBar(
-        backgroundColor: pageBackground,
-        elevation: 0,
         title: const Text(
           'Support',
           style: TextStyle(
-            color: marineDarkBlue,
             fontWeight: FontWeight.bold,
           ),
         ),
+        backgroundColor: backgroundColor,
+        foregroundColor: marineDarkBlue,
+        elevation: 0,
       ),
-
       body: Padding(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.all(22),
         child: Column(
           children: [
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(25),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(25),
-              ),
-              child: const Column(
-                children: [
-                  Icon(
-                    Icons.support_agent,
-                    size: 70,
-                    color: marineBlue,
-                  ),
-
-                  SizedBox(height: 15),
-
-                  Text(
-                    'Need Help?',
-                    style: TextStyle(
-                      fontSize: 27,
-                      fontWeight: FontWeight.bold,
-                      color: marineDarkBlue,
-                    ),
-                  ),
-
-                  SizedBox(height: 10),
-
-                  Text(
-                    'For product information, dosage guidance and aquaculture support, contact Marine Aqua Technologies.',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: Colors.grey,
-                      height: 1.5,
-                    ),
-                  ),
-                ],
-              ),
+            _supportCard(
+              Icons.phone,
+              'Call Support',
+              'Contact Marine Aqua Technologies',
             ),
-
-            const SizedBox(height: 20),
-
-            SupportTile(
-              icon: Icons.phone,
-              title: 'Call Support',
-              subtitle: 'Contact our support team',
-              onTap: () {},
+            const SizedBox(height: 15),
+            _supportCard(
+              Icons.chat,
+              'Technical Support',
+              'Get aquaculture product guidance',
             ),
-
-            SupportTile(
-              icon: Icons.email_outlined,
-              title: 'Email Support',
-              subtitle: 'Send us your query',
-              onTap: () {},
+            const SizedBox(height: 15),
+            _supportCard(
+              Icons.location_on,
+              'Service Support',
+              'Contact our technical team',
             ),
           ],
         ),
       ),
     );
   }
-}
 
-// ============================================================
-// SUPPORT TILE
-// ============================================================
-
-class SupportTile extends StatelessWidget {
-  final IconData icon;
-  final String title;
-  final String subtitle;
-  final VoidCallback onTap;
-
-  const SupportTile({
-    super.key,
-    required this.icon,
-    required this.title,
-    required this.subtitle,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      color: Colors.white,
-      elevation: 0,
-      child: ListTile(
-        contentPadding: const EdgeInsets.all(12),
-        leading: CircleAvatar(
-          backgroundColor: marineLightBlue,
-          child: Icon(
-            icon,
-            color: marineBlue,
+  Widget _supportCard(
+    IconData icon,
+    String title,
+    String subtitle,
+  ) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(22),
+      ),
+      child: Row(
+        children: [
+          CircleAvatar(
+            radius: 28,
+            backgroundColor: marineCyan,
+            child: Icon(
+              icon,
+              color: marineBlue,
+              size: 28,
+            ),
           ),
-        ),
-        title: Text(
-          title,
-          style: const TextStyle(
-            fontWeight: FontWeight.bold,
-            color: marineDarkBlue,
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment:
+                  CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: marineDarkBlue,
+                  ),
+                ),
+                const SizedBox(height: 5),
+                Text(
+                  subtitle,
+                  style: const TextStyle(
+                    color: Colors.grey,
+                  ),
+                ),
+              ],
+            ),
           ),
-        ),
-        subtitle: Text(subtitle),
-        trailing: const Icon(
-          Icons.arrow_forward_ios,
-          size: 16,
-        ),
-        onTap: onTap,
+        ],
       ),
     );
   }
@@ -1491,201 +1254,120 @@ class ProfilePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final user = FirebaseAuth.instance.currentUser;
-
-    String mobile = user?.phoneNumber ?? 'Not available';
-
     return Scaffold(
-      backgroundColor: pageBackground,
-
+      backgroundColor: backgroundColor,
       appBar: AppBar(
-        backgroundColor: pageBackground,
-        elevation: 0,
         title: const Text(
           'Profile',
           style: TextStyle(
-            color: marineDarkBlue,
             fontWeight: FontWeight.bold,
           ),
         ),
+        backgroundColor: backgroundColor,
+        foregroundColor: marineDarkBlue,
+        elevation: 0,
       ),
-
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.all(22),
         child: Column(
           children: [
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.symmetric(
-                vertical: 30,
-              ),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(28),
-              ),
-              child: const Column(
-                children: [
-                  CircleAvatar(
-                    radius: 48,
-                    backgroundColor: marineLightBlue,
-                    child: Icon(
-                      Icons.person,
-                      size: 55,
-                      color: marineBlue,
-                    ),
-                  ),
+            const SizedBox(height: 20),
 
-                  SizedBox(height: 15),
-
-                  Text(
-                    'User Profile',
-                    style: TextStyle(
-                      fontSize: 25,
-                      fontWeight: FontWeight.bold,
-                      color: marineDarkBlue,
-                    ),
-                  ),
-                ],
+            const CircleAvatar(
+              radius: 48,
+              backgroundColor: marineCyan,
+              child: Icon(
+                Icons.person,
+                size: 55,
+                color: marineBlue,
               ),
             ),
 
-            const SizedBox(height: 20),
+            const SizedBox(height: 18),
 
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(22),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(25),
-              ),
-              child: Row(
-                children: [
-                  const Icon(
-                    Icons.phone_android,
-                    color: marineBlue,
-                    size: 32,
-                  ),
-
-                  const SizedBox(width: 18),
-
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment:
-                          CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          'Mobile Number',
-                          style: TextStyle(
-                            color: Colors.grey,
-                            fontSize: 14,
-                          ),
-                        ),
-
-                        const SizedBox(height: 5),
-
-                        Text(
-                          mobile,
-                          style: const TextStyle(
-                            fontSize: 19,
-                            fontWeight: FontWeight.bold,
-                            color: marineDarkBlue,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
-            const SizedBox(height: 20),
-
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(22),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(25),
-              ),
-              child: const Row(
-                children: [
-                  Icon(
-                    Icons.business,
-                    color: marineBlue,
-                    size: 32,
-                  ),
-
-                  SizedBox(width: 18),
-
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment:
-                          CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Company',
-                          style: TextStyle(
-                            color: Colors.grey,
-                            fontSize: 14,
-                          ),
-                        ),
-
-                        SizedBox(height: 5),
-
-                        Text(
-                          'Marine Aqua Technologies',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: marineDarkBlue,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
+            const Text(
+              'User Profile',
+              style: TextStyle(
+                fontSize: 25,
+                fontWeight: FontWeight.bold,
+                color: marineDarkBlue,
               ),
             ),
 
             const SizedBox(height: 30),
 
-            SizedBox(
-              width: double.infinity,
-              height: 58,
-              child: OutlinedButton.icon(
-                onPressed: () async {
-                  await FirebaseAuth.instance.signOut();
+            _profileItem(
+              Icons.phone,
+              'Mobile Number',
+              'Login mobile number',
+            ),
 
-                  if (!context.mounted) return;
+            const SizedBox(height: 12),
 
-                  Navigator.pushAndRemoveUntil(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => const LoginPage(),
-                    ),
-                    (route) => false,
-                  );
-                },
-                icon: const Icon(Icons.logout),
-                label: const Text(
-                  'LOGOUT',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                style: OutlinedButton.styleFrom(
-                  foregroundColor: Colors.red,
-                  side: const BorderSide(
-                    color: Colors.red,
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                ),
-              ),
+            _profileItem(
+              Icons.location_on,
+              'Location',
+              'Location information',
+            ),
+
+            const SizedBox(height: 12),
+
+            _profileItem(
+              Icons.business,
+              'Marine Aqua Technologies',
+              'Aquaculture Solutions',
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _profileItem(
+    IconData icon,
+    String title,
+    String value,
+  ) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Row(
+        children: [
+          Icon(
+            icon,
+            color: marineBlue,
+            size: 28,
+          ),
+          const SizedBox(width: 15),
+          Expanded(
+            child: Column(
+              crossAxisAlignment:
+                  CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: const TextStyle(
+                    fontSize: 15,
+                    color: Colors.grey,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  value,
+                  style: const TextStyle(
+                    fontSize: 17,
+                    fontWeight: FontWeight.bold,
+                    color: marineDarkBlue,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
