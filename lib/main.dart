@@ -680,10 +680,10 @@ class HomeScreen extends StatelessWidget {
             /* HERO */
 
             Container(
-              height: 190,
+              height: 165,
               width: double.infinity,
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(25),
+                borderRadius: BorderRadius.circular(22),
                 image: const DecorationImage(
                   image: AssetImage(
                     'assets/products/hero_shrimp.jpg',
@@ -692,9 +692,9 @@ class HomeScreen extends StatelessWidget {
                 ),
               ),
               child: Container(
-                padding: const EdgeInsets.all(20),
+                padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(25),
+                  borderRadius: BorderRadius.circular(22),
                   gradient: LinearGradient(
                     begin: Alignment.centerLeft,
                     end: Alignment.centerRight,
@@ -711,8 +711,8 @@ class HomeScreen extends StatelessWidget {
                       'Healthy Ponds\nStronger Shrimp\nHigher Profits',
                       style: TextStyle(
                         color: Colors.white,
-                        fontSize: 25,
-                        height: 1.05,
+                        fontSize: 22,
+                        height: 1.02,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -723,7 +723,7 @@ class HomeScreen extends StatelessWidget {
                       'Complete Aquaculture Solutions\nfor a Better Tomorrow',
                       style: TextStyle(
                         color: Colors.white,
-                        fontSize: 13,
+                        fontSize: 12,
                       ),
                     ),
 
@@ -738,8 +738,8 @@ class HomeScreen extends StatelessWidget {
                       ),
                       child: Padding(
                         padding: EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 10,
+                          horizontal: 13,
+                          vertical: 8,
                         ),
                         child: Text(
                           'Explore Products  →',
@@ -809,7 +809,7 @@ class HomeScreen extends StatelessWidget {
               ],
             ),
 
-            const SizedBox(height: 20),
+            const SizedBox(height: 15),
 
             /* DEALER */
 
@@ -886,7 +886,7 @@ class HomeScreen extends StatelessWidget {
             const SizedBox(height: 12),
 
             SizedBox(
-              height: 190,
+              height: 165,
               child: ListView.separated(
                 scrollDirection: Axis.horizontal,
                 itemCount: products.length,
@@ -936,7 +936,7 @@ class HomeScreen extends StatelessWidget {
             /* WATER QUALITY */
 
             Container(
-              padding: const EdgeInsets.all(18),
+              padding: const EdgeInsets.all(15),
               decoration: BoxDecoration(
                 color: const Color(0xFFDDF8E8),
                 borderRadius: BorderRadius.circular(24),
@@ -1057,20 +1057,6 @@ const List<Product> products = [
     description: '',
     dosage: '',
     usage: '',
-    fullMatter: r'''**వేగవంతమైన ఎదుగుదలకు గ్రోత్ బూస్టర్**
-
-మరైన్ వోల్ట్-X రొయ్యలలో వేగవంతమైన ఎదుగుదల, మెరుగైన ఆహార వినియోగం మరియు ఆరోగ్యకరమైన శరీర అభివృద్ధికి సహాయపడే గ్రోత్ బూస్టర్. ఇందులోని ప్రోబయోటిక్స్ మరియు ఎంజైమ్‌ల ఆధారిత సహాయం రొయ్యలు తీసుకున్న ఆహారం సులభంగా జీర్ణమై, అందులోని పోషకాలు శరీరానికి సమర్థవంతంగా అందుబాటులోకి రావడానికి తోడ్పడుతుంది. దీంతో ఆహార వినియోగ సామర్థ్యం మెరుగుపడి, రొయ్యల ఎదుగుదల మరియు ఆరోగ్యానికి అవసరమైన పోషక సహాయం లభిస్తుంది.
-
-**మోతాదు:** ప్రతి **1 కిలో ఫీడ్‌కు 5 మి.లీ.**
-
-**వినియోగ విధానం:** అవసరమైన మోతాదులో మరైన్ వోల్ట్-Xను ఫీడ్‌పై సమానంగా కలిపి, బాగా కోట్ అయ్యేలా మిక్స్ చేసి రొయ్యలకు ఇవ్వాలి. **ప్రతిరోజూ ఫీడ్‌తో కలిపి ఉపయోగించాలి.** సరైన మోతాదు మరియు క్రమబద్ధమైన వినియోగం ద్వారా రొయ్యల జీర్ణక్రియ, ఫీడ్ వినియోగం మరియు ఆరోగ్యకరమైన ఎదుగుదలకు తోడ్పడుతుంది.''',
-  ),
-  Product(
-    name: 'Marine Volt-X',
-    image: 'assets/products/marine volt-x.png',
-    description: '',
-    dosage: '',
-    usage: '',
     fullMatter: r'''**పొట్టు మారే ప్రక్రియకు ఖనిజాల సహాయం**
 
 మరైన్-6G లిక్విడ్ మినరల్స్ రొయ్యలు పొట్టు మార్చే సమయంలో అవసరమైన ఖనిజాల అందుబాటును మెరుగుపరచడంలో సహాయపడుతుంది. కొత్త పొట్టు ఏర్పడటం, పొట్టు గట్టిపడటం మరియు పొట్టు మారిన తర్వాత రొయ్యలు త్వరగా కోలుకోవడానికి అవసరమైన ఖనిజ సహాయాన్ని అందిస్తుంది. సరైన ఖనిజ సమతుల్యతతో పొట్టు మారే ప్రక్రియ సజావుగా సాగేందుకు, రొయ్యల ఆరోగ్యకరమైన ఎదుగుదలకు మరియు మెరుగైన పనితీరుకు తోడ్పడుతుంది.
@@ -1078,6 +1064,20 @@ const List<Product> products = [
 **మోతాదు:** ఎకరానికి **2 లీటర్లు**.
 
 **వినియోగ విధానం:** అవసరమైన మోతాదులో మరైన్-6Gను నీటితో బాగా కలిపి, చెరువులో సమానంగా విస్తరించే విధంగా సాయంత్రం సమయంలో పాండ్‌లో అప్లై చేయాలి. రొయ్యల పెరుగుదల దశ, చెరువులోని ఖనిజాల స్థాయి మరియు నీటి పరిస్థితులను బట్టి వినియోగాన్ని నిర్వహించాలి.''',
+  ),
+  Product(
+    name: 'Marine Volt-X',
+    image: 'assets/products/marine volt-x.png',
+    description: '',
+    dosage: '',
+    usage: '',
+    fullMatter: r'''**వేగవంతమైన ఎదుగుదలకు గ్రోత్ బూస్టర్**
+
+మరైన్ వోల్ట్-X రొయ్యలలో వేగవంతమైన ఎదుగుదల, మెరుగైన ఆహార వినియోగం మరియు ఆరోగ్యకరమైన శరీర అభివృద్ధికి సహాయపడే గ్రోత్ బూస్టర్. ఇందులోని ప్రోబయోటిక్స్ మరియు ఎంజైమ్‌ల ఆధారిత సహాయం రొయ్యలు తీసుకున్న ఆహారం సులభంగా జీర్ణమై, అందులోని పోషకాలు శరీరానికి సమర్థవంతంగా అందుబాటులోకి రావడానికి తోడ్పడుతుంది. దీంతో ఆహార వినియోగ సామర్థ్యం మెరుగుపడి, రొయ్యల ఎదుగుదల మరియు ఆరోగ్యానికి అవసరమైన పోషక సహాయం లభిస్తుంది.
+
+**మోతాదు:** ప్రతి **1 కిలో ఫీడ్‌కు 5 మి.లీ.**
+
+**వినియోగ విధానం:** అవసరమైన మోతాదులో మరైన్ వోల్ట్-Xను ఫీడ్‌పై సమానంగా కలిపి, బాగా కోట్ అయ్యేలా మిక్స్ చేసి రొయ్యలకు ఇవ్వాలి. **ప్రతిరోజూ ఫీడ్‌తో కలిపి ఉపయోగించాలి.** సరైన మోతాదు మరియు క్రమబద్ధమైన వినియోగం ద్వారా రొయ్యల జీర్ణక్రియ, ఫీడ్ వినియోగం మరియు ఆరోగ్యకరమైన ఎదుగుదలకు తోడ్పడుతుంది.''',
   ),
   Product(
     name: 'Bio Sludge',
@@ -1830,8 +1830,8 @@ class QuickCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 175,
-      padding: const EdgeInsets.all(16),
+      height: 145,
+      padding: const EdgeInsets.all(13),
       decoration: BoxDecoration(
         color: color,
         borderRadius: BorderRadius.circular(22),
@@ -1841,24 +1841,24 @@ class QuickCard extends StatelessWidget {
         children: [
           Icon(
             icon,
-            size: 35,
+            size: 30,
             color: marineBlue,
           ),
 
-          const SizedBox(height: 10),
+          const SizedBox(height: 7),
 
           Text(
             title,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: const TextStyle(
-              fontSize: 18,
+              fontSize: 16,
               fontWeight: FontWeight.bold,
               color: darkBlue,
             ),
           ),
 
-          const SizedBox(height: 6),
+          const SizedBox(height: 4),
 
           Expanded(
             child: Text(
@@ -1866,7 +1866,7 @@ class QuickCard extends StatelessWidget {
               maxLines: 3,
               overflow: TextOverflow.ellipsis,
               style: const TextStyle(
-                fontSize: 13,
+                fontSize: 12,
                 color: Colors.black54,
               ),
             ),
@@ -2010,7 +2010,7 @@ class StoryCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 170,
+      height: 150,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
         image: DecorationImage(
@@ -2142,7 +2142,7 @@ class GuideCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(15),
           child: Image.asset(
             image,
-            height: 105,
+            height: 90,
             width: double.infinity,
             fit: BoxFit.cover,
           ),
