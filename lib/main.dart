@@ -763,10 +763,9 @@ class HomeScreen extends StatelessWidget {
               children: [
                 Expanded(
                   child: QuickCard(
-                    icon: Icons.lightbulb_outline,
-                    title: 'Tip Of The Day',
-                    text: 'Maintain proper dissolved oxygen levels for better growth.',
-                    color: const Color(0xFFDDF7E8),
+                    image: 'assets/products/card1.png',
+                    title: 'రొయ్యల సాగు గైడ్',
+                    text: 'రొయ్యల సాగులో ముఖ్యమైన సూచనలు తెలుసుకోండి.',
                   ),
                 ),
 
@@ -774,10 +773,9 @@ class HomeScreen extends StatelessWidget {
 
                 Expanded(
                   child: QuickCard(
-                    icon: Icons.menu_book,
-                    title: 'Shrimp Culture Guide',
-                    text: 'Learn setup, management & best practices.',
-                    color: const Color(0xFFDDEEFF),
+                    image: 'assets/products/card2.png',
+                    title: 'బయోమాస్ కాలిక్యులేటర్',
+                    text: 'మీ చెరువులో అంచనా బయోమాస్‌ను సులభంగా తెలుసుకోండి.',
                   ),
                 ),
               ],
@@ -789,10 +787,9 @@ class HomeScreen extends StatelessWidget {
               children: [
                 Expanded(
                   child: QuickCard(
-                    icon: Icons.calculate_outlined,
-                    title: 'Biomass Calculator',
-                    text: 'Get estimated biomass in 3 easy steps.',
-                    color: const Color(0xFFDDF7E8),
+                    image: 'assets/products/card3.png',
+                    title: 'రొయ్యల వ్యాధులు',
+                    text: 'సాధారణ రొయ్యల వ్యాధులను గుర్తించి నివారించండి.',
                   ),
                 ),
 
@@ -800,10 +797,9 @@ class HomeScreen extends StatelessWidget {
 
                 Expanded(
                   child: QuickCard(
-                    icon: Icons.health_and_safety_outlined,
-                    title: 'Shrimp Diseases',
-                    text: 'Identify, prevent & manage common diseases.',
-                    color: const Color(0xFFFFE2E2),
+                    image: 'assets/products/card4.png',
+                    title: 'టిప్ ఆఫ్ ది డే',
+                    text: 'ప్రతి రోజు ఆక్వా సాగుకు ఉపయోగపడే ముఖ్యమైన టిప్స్.',
                   ),
                 ),
               ],
@@ -1561,69 +1557,90 @@ class ProfileScreen extends StatelessWidget {
 ============================================================ */
 
 class QuickCard extends StatelessWidget {
-  final IconData icon;
+  final String image;
   final String title;
   final String text;
-  final Color color;
 
   const QuickCard({
     super.key,
-    required this.icon,
+    required this.image,
     required this.title,
     required this.text,
-    required this.color,
   });
 
   @override
   Widget build(BuildContext context) {
     return Container(
       height: 175,
-      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: color,
+        color: Colors.white,
         borderRadius: BorderRadius.circular(22),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(.07),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
+      clipBehavior: Clip.antiAlias,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(
-            icon,
-            size: 35,
-            color: marineBlue,
-          ),
-
-          const SizedBox(height: 10),
-
-          Text(
-            title,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: const TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: darkBlue,
-            ),
-          ),
-
-          const SizedBox(height: 6),
-
           Expanded(
-            child: Text(
-              text,
-              maxLines: 3,
-              overflow: TextOverflow.ellipsis,
-              style: const TextStyle(
-                fontSize: 13,
-                color: Colors.black54,
+            flex: 6,
+            child: SizedBox(
+              width: double.infinity,
+              child: Image.asset(
+                image,
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) {
+                  return Container(
+                    color: const Color(0xFFE8F6FA),
+                    child: const Center(
+                      child: Icon(
+                        Icons.image_not_supported_outlined,
+                        color: marineBlue,
+                        size: 32,
+                      ),
+                    ),
+                  );
+                },
               ),
             ),
           ),
-
-          const Align(
-            alignment: Alignment.bottomRight,
-            child: Icon(
-              Icons.arrow_forward,
-              color: darkBlue,
+          Expanded(
+            flex: 4,
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(12, 8, 12, 7),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold,
+                      color: darkBlue,
+                    ),
+                  ),
+                  const SizedBox(height: 3),
+                  Expanded(
+                    child: Text(
+                      text,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        fontSize: 10.5,
+                        color: Colors.black54,
+                        height: 1.15,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ],
