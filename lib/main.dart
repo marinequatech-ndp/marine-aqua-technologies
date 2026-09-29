@@ -1559,26 +1559,9 @@ class ProductDetailsScreen extends StatelessWidget {
 
             const SizedBox(height: 25),
 
-            InfoBox(
-              title: 'Benefits',
-              text:
-                  'Aquaculture support solution designed for better pond management, shrimp health and farm performance.',
-            ),
-
-            const SizedBox(height: 15),
-
-            InfoBox(
-              title: 'Composition',
-              text:
-                  'Product composition and technical information can be displayed here.',
-            ),
-
-            const SizedBox(height: 15),
-
-            InfoBox(
-              title: 'Dosage',
-              text:
-                  'Refer to the product label and technical recommendation for the appropriate dosage.',
+            _ProductInfoSection(
+              title: 'Product Details',
+              value: product.fullMatter.replaceAll('**', ''),
             ),
           ],
         ),
