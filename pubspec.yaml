@@ -35,6 +35,6 @@ flutter:
 flutter_launcher_icons:
   android: true
   ios: true
-  image_path: "assets/icons/marine_app_icon.png"
+  image_path: "assets/products/marine_app_icon.png"
   adaptive_icon_background: "#FFFFFF"
-  adaptive_icon_foreground: "assets/icons/marine_app_icon.png"
+  adaptive_icon_foreground: "assets/products/marine_app_icon.png"
