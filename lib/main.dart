@@ -815,9 +815,9 @@ class HeroBanner extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      height: 235,
+      height: 185,
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(25),
+        borderRadius: BorderRadius.circular(20),
         image: const DecorationImage(
           image: AssetImage(
             'assets/shrimp_hero.jpg',
@@ -827,13 +827,13 @@ class HeroBanner extends StatelessWidget {
       ),
       child: Container(
         padding: const EdgeInsets.fromLTRB(
-          18,
-          18,
           16,
-          16,
+          12,
+          14,
+          12,
         ),
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(25),
+          borderRadius: BorderRadius.circular(20),
           gradient: LinearGradient(
             begin: Alignment.centerLeft,
             end: Alignment.centerRight,
@@ -853,7 +853,7 @@ class HeroBanner extends StatelessWidget {
               'ఆరోగ్యకరమైన చెరువులు',
               style: TextStyle(
                 color: Colors.white,
-                fontSize: 24,
+                fontSize: 19,
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -864,7 +864,7 @@ class HeroBanner extends StatelessWidget {
               'బలమైన రొయ్యలు',
               style: TextStyle(
                 color: Color(0xFFFFD600),
-                fontSize: 24,
+                fontSize: 19,
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -885,8 +885,8 @@ class HeroBanner extends StatelessWidget {
               'సంపూర్ణ ఆక్వాకల్చర్ సొల్యూషన్స్',
               style: TextStyle(
                 color: Colors.white,
-                fontSize: 13,
-                height: 1.4,
+                fontSize: 11,
+                height: 1.25,
               ),
             ),
           ],
@@ -966,10 +966,10 @@ class HomeCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 250,
+      height: 205,
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(22),
+        borderRadius: BorderRadius.circular(18),
         border: Border.all(
           color: const Color(0xFFE1EEF4),
         ),
@@ -986,7 +986,7 @@ class HomeCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           SizedBox(
-            height: 140,
+            height: 105,
             width: double.infinity,
             child: Image.asset(
               image,
@@ -997,7 +997,7 @@ class HomeCard extends StatelessWidget {
                   alignment: Alignment.center,
                   child: const Icon(
                     Icons.image_not_supported_outlined,
-                    size: 42,
+                    size: 32,
                     color: Color(0xFF0B79B2),
                   ),
                 );
@@ -1005,28 +1005,28 @@ class HomeCard extends StatelessWidget {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.fromLTRB(16, 13, 12, 5),
+            padding: const EdgeInsets.fromLTRB(11, 9, 9, 3),
             child: Text(
               title,
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
               style: const TextStyle(
                 fontWeight: FontWeight.w800,
-                fontSize: 17,
-                height: 1.15,
+                fontSize: 14,
+                height: 1.1,
                 color: Color(0xFF064E7A),
               ),
             ),
           ),
           Padding(
-            padding: const EdgeInsets.fromLTRB(16, 0, 12, 12),
+            padding: const EdgeInsets.fromLTRB(11, 0, 9, 8),
             child: Text(
               text,
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
               style: const TextStyle(
-                fontSize: 12,
-                height: 1.35,
+                fontSize: 10,
+                height: 1.25,
                 color: Colors.black54,
               ),
             ),
