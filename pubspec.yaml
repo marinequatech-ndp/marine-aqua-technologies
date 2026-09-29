@@ -1,5 +1,6 @@
 name: marine_aqua_technologies
-description: MARINE AQUA TECHNOLOGIES - Smart Aquaculture. Better Results.
+description: Marine Aqua Technologies - Smart Aquaculture. Better Results.
+
 publish_to: "none"
 
 version: 1.0.0+1
@@ -12,9 +13,10 @@ dependencies:
     sdk: flutter
 
   cupertino_icons: ^1.0.8
+
+  image_picker: ^1.2.0
   geolocator: ^14.0.2
   geocoding: ^5.0.0
-  image_picker: ^1.2.0
   local_auth: ^2.3.0
 
 dev_dependencies:
@@ -27,24 +29,4 @@ flutter:
   uses-material-design: true
 
   assets:
-    - assets/products/marine logo.png
-    - assets/products/marine 6g.png
-    - assets/products/marine protab.png
-    - assets/products/marine volt-x.png
-    - assets/products/Marine vibrio shield.png
-    - assets/products/marine white shield.png
-    - assets/products/oxytab plus.png
-    - assets/products/Bio sludge.png
-    - assets/products/Bio soil.png
-    - assets/products/Free moult.png
-    - assets/products/Hi-Soft.png
-    - assets/products/Red thunder.png
-    - assets/products/Starmin.png
-    - assets/products/Yucca Pro.png
-    - assets/products/Zeoneem.png
-    - assets/products/nutrimin.png
-    - assets/products/biomass_calculator.png
-    - assets/products/chlorides.png
-    - assets/products/hero_shrimp.jpg
-    - assets/products/shrimp_diseases.png
-    - assets/products/shrimp_guide.png
+    - assets/products/
