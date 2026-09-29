@@ -10,12 +10,26 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  cupertino_icons: ^1.0.8
   video_player: ^2.10.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_launcher_icons: ^0.14.4
 
 flutter:
   uses-material-design: true
+
   assets:
     - assets/products/
     - assets/
     - assets/success_stories/
     - assets/success_stories/thumbs/
+
+flutter_launcher_icons:
+  android: true
+  ios: false
+  image_path: "assets/products/marine logo.png"
+  adaptive_icon_background: "#FFFFFF"
+  adaptive_icon_foreground: "assets/products/marine logo.png"
