@@ -603,9 +603,7 @@ class _MainNavigationScreenState
   final List<Widget> pages = const [
     HomeScreen(),
     ProductsScreen(),
-    MyPondsScreen(),
     SupportScreen(),
-    ProfileScreen(),
   ];
 
   @override
@@ -637,19 +635,9 @@ class _MainNavigationScreenState
             label: 'Products',
           ),
           NavigationDestination(
-            icon: Icon(Icons.waves_outlined),
-            selectedIcon: Icon(Icons.waves),
-            label: 'My Ponds',
-          ),
-          NavigationDestination(
             icon: Icon(Icons.headset_mic_outlined),
             selectedIcon: Icon(Icons.headset_mic),
             label: 'Support',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.person_outline),
-            selectedIcon: Icon(Icons.person),
-            label: 'Profile',
           ),
         ],
       ),
@@ -677,41 +665,29 @@ class HomeScreen extends StatelessWidget {
 
             SliverPadding(
               padding: const EdgeInsets.fromLTRB(
-                16,
-                12,
-                16,
-                25,
+                14,
+                8,
+                14,
+                18,
               ),
               sliver: SliverList(
                 delegate: SliverChildListDelegate(
                   [
                     const HeroBanner(),
 
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 12),
 
                     const QuickActions(),
 
-                    const SizedBox(height: 18),
-
-                    const DealerLocationSection(),
-
-                    const SizedBox(height: 18),
-
-                    const HomeProductsSection(),
-
-                    const SizedBox(height: 20),
-
-                    const SuccessStoriesSection(),
-
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 12),
 
                     const WaterQualitySection(),
 
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 12),
 
-                    const ShrimpGrowthGuideSection(),
+                    const SuccessStoriesSection(),
 
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 16),
                   ],
                 ),
               ),
@@ -821,29 +797,6 @@ class HomeHeader extends StatelessWidget {
               color: Color(0xFF064E7A),
             ),
           ),
-          IconButton(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => const ProfileScreen(),
-                ),
-              );
-            },
-            icon: Container(
-              width: 42,
-              height: 42,
-              decoration: const BoxDecoration(
-                color: Color(0xFFDDF4FC),
-                shape: BoxShape.circle,
-              ),
-              child: const Icon(
-                Icons.person,
-                size: 25,
-                color: Color(0xFF0877AC),
-              ),
-            ),
-          ),
         ],
       ),
     );
@@ -862,7 +815,7 @@ class HeroBanner extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      height: 275,
+      height: 235,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(25),
         image: const DecorationImage(
@@ -874,10 +827,10 @@ class HeroBanner extends StatelessWidget {
       ),
       child: Container(
         padding: const EdgeInsets.fromLTRB(
-          20,
-          24,
           18,
           18,
+          16,
+          16,
         ),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(25),
@@ -897,10 +850,10 @@ class HeroBanner extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              'Healthy Ponds',
+              'ఆరోగ్యకరమైన చెరువులు',
               style: TextStyle(
                 color: Colors.white,
-                fontSize: 28,
+                fontSize: 24,
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -908,19 +861,19 @@ class HeroBanner extends StatelessWidget {
             SizedBox(height: 4),
 
             Text(
-              'Stronger Shrimp',
+              'బలమైన రొయ్యలు',
               style: TextStyle(
                 color: Color(0xFFFFD600),
-                fontSize: 28,
+                fontSize: 24,
                 fontWeight: FontWeight.bold,
               ),
             ),
 
             Text(
-              'Higher Profits',
+              'అధిక లాభాలు',
               style: TextStyle(
                 color: Colors.white,
-                fontSize: 28,
+                fontSize: 24,
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -928,11 +881,11 @@ class HeroBanner extends StatelessWidget {
             SizedBox(height: 14),
 
             Text(
-              'Complete Aquaculture Solutions\n'
-              'for a Better Tomorrow',
+              'మెరుగైన ఫలితాల కోసం\n'
+              'సంపూర్ణ ఆక్వాకల్చర్ సొల్యూషన్స్',
               style: TextStyle(
                 color: Colors.white,
-                fontSize: 15,
+                fontSize: 13,
                 height: 1.4,
               ),
             ),
@@ -1013,7 +966,7 @@ class HomeCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 315,
+      height: 250,
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(22),
@@ -1033,7 +986,7 @@ class HomeCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           SizedBox(
-            height: 175,
+            height: 140,
             width: double.infinity,
             child: Image.asset(
               image,
@@ -1059,7 +1012,7 @@ class HomeCard extends StatelessWidget {
               overflow: TextOverflow.ellipsis,
               style: const TextStyle(
                 fontWeight: FontWeight.w800,
-                fontSize: 20,
+                fontSize: 17,
                 height: 1.15,
                 color: Color(0xFF064E7A),
               ),
@@ -1072,7 +1025,7 @@ class HomeCard extends StatelessWidget {
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
               style: const TextStyle(
-                fontSize: 14,
+                fontSize: 12,
                 height: 1.35,
                 color: Colors.black54,
               ),
@@ -1178,235 +1131,6 @@ class SuccessStoriesSection extends StatelessWidget {
           ),
         ),
       ],
-    );
-  }
-}
-
-/* =========================================================
-   DEALER LOCATION
-========================================================= */
-
-class DealerLocationSection extends StatelessWidget {
-  const DealerLocationSection({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(18),
-      decoration: BoxDecoration(
-        color: const Color(0xFFE1F5FD),
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(
-          color: const Color(0xFFB7E3EF),
-        ),
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 82,
-            height: 82,
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: const Icon(
-              Icons.location_on,
-              size: 48,
-              color: Color(0xFFE53935),
-            ),
-          ),
-          const SizedBox(width: 14),
-          const Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Dealers Location',
-                  style: TextStyle(
-                    color: Color(0xFF064E7A),
-                    fontSize: 22,
-                    fontWeight: FontWeight.w800,
-                  ),
-                ),
-                SizedBox(height: 4),
-                Text(
-                  'Find our nearest dealers across India',
-                  style: TextStyle(
-                    color: Colors.black54,
-                    fontSize: 14,
-                    height: 1.35,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          ElevatedButton(
-            onPressed: () {},
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF168FE0),
-              foregroundColor: Colors.white,
-              elevation: 0,
-              padding: const EdgeInsets.symmetric(
-                horizontal: 18,
-                vertical: 13,
-              ),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(26),
-              ),
-            ),
-            child: const Text(
-              'Find Nearby',
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-/* =========================================================
-   SHRIMP GROWTH GUIDE
-========================================================= */
-
-class ShrimpGrowthGuideSection extends StatelessWidget {
-  const ShrimpGrowthGuideSection({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          children: [
-            const Icon(
-              Icons.menu_book_outlined,
-              color: Color(0xFF0877AC),
-              size: 30,
-            ),
-            const SizedBox(width: 10),
-            const Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Shrimp Growth Guide',
-                    style: TextStyle(
-                      color: Color(0xFF064E7A),
-                      fontSize: 24,
-                      fontWeight: FontWeight.w800,
-                    ),
-                  ),
-                  Text(
-                    'Step-by-step guidance from stocking to harvest',
-                    style: TextStyle(
-                      color: Colors.black54,
-                      fontSize: 13,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const Text(
-              'View All →',
-              style: TextStyle(
-                color: Color(0xFF0877AC),
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 12),
-        Row(
-          children: [
-            Expanded(
-              child: _GrowthGuideCard(
-                image: 'assets/products/card1.png',
-                title: 'Stocking Guide',
-              ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: _GrowthGuideCard(
-                image: 'assets/products/card2.png',
-                title: 'Growth Management',
-              ),
-            ),
-          ],
-        ),
-      ],
-    );
-  }
-}
-
-class _GrowthGuideCard extends StatelessWidget {
-  final String image;
-  final String title;
-
-  const _GrowthGuideCard({
-    required this.image,
-    required this.title,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: 155,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: const Color(0xFFE0EEF5),
-        ),
-      ),
-      clipBehavior: Clip.antiAlias,
-      child: Stack(
-        fit: StackFit.expand,
-        children: [
-          Image.asset(
-            image,
-            fit: BoxFit.cover,
-            errorBuilder: (_, __, ___) {
-              return Container(
-                color: const Color(0xFFEAF7FC),
-                child: const Icon(
-                  Icons.menu_book_outlined,
-                  size: 50,
-                  color: Color(0xFF0877AC),
-                ),
-              );
-            },
-          ),
-          Align(
-            alignment: Alignment.bottomLeft,
-            child: Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    Colors.transparent,
-                    Colors.black.withOpacity(0.78),
-                  ],
-                ),
-              ),
-              child: Text(
-                title,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
     );
   }
 }
@@ -2164,218 +1888,6 @@ class ProductGridCard extends StatelessWidget {
             ),
           ),
         ],
-      ),
-    );
-  }
-}
-
-/* =========================================================
-   MY PONDS SCREEN
-========================================================= */
-
-class MyPondsScreen extends StatelessWidget {
-  const MyPondsScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFFF4FAFD),
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        title: const Text(
-          'My Ponds',
-          style: TextStyle(
-            color: Color(0xFF064E7A),
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-      ),
-      body: ListView(
-        padding: const EdgeInsets.all(18),
-        children: [
-          Container(
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(24),
-              border: Border.all(
-                color: const Color(0xFFE0EEF5),
-              ),
-            ),
-            child: const Column(
-              children: [
-                Icon(
-                  Icons.water,
-                  size: 70,
-                  color: Color(0xFF129BCB),
-                ),
-                SizedBox(height: 12),
-                Text(
-                  'No ponds added yet',
-                  style: TextStyle(
-                    color: Color(0xFF064E7A),
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                SizedBox(height: 6),
-                Text(
-                  'Add your pond details to track water quality, growth and farm records.',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: Colors.black54,
-                    height: 1.4,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 18),
-          SizedBox(
-            height: 52,
-            child: ElevatedButton.icon(
-              onPressed: () {},
-              icon: const Icon(Icons.add),
-              label: const Text(
-                'Add New Pond',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF129BCB),
-                foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(28),
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-/* =========================================================
-   PROFILE SCREEN
-========================================================= */
-
-class ProfileScreen extends StatelessWidget {
-  const ProfileScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFFF4FAFD),
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        title: const Text(
-          'Profile',
-          style: TextStyle(
-            color: Color(0xFF064E7A),
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-      ),
-      body: ListView(
-        padding: const EdgeInsets.all(18),
-        children: [
-          Container(
-            padding: const EdgeInsets.all(22),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(24),
-            ),
-            child: const Column(
-              children: [
-                CircleAvatar(
-                  radius: 42,
-                  backgroundColor: Color(0xFFDDF4FC),
-                  child: Icon(
-                    Icons.person,
-                    size: 48,
-                    color: Color(0xFF0877AC),
-                  ),
-                ),
-                SizedBox(height: 12),
-                Text(
-                  'Marine Aqua Farmer',
-                  style: TextStyle(
-                    color: Color(0xFF064E7A),
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                SizedBox(height: 4),
-                Text(
-                  'Mobile login account',
-                  style: TextStyle(
-                    color: Colors.grey,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 14),
-          _ProfileMenuTile(
-            icon: Icons.person_outline,
-            title: 'Account Details',
-          ),
-          _ProfileMenuTile(
-            icon: Icons.location_on_outlined,
-            title: 'Farm Location',
-          ),
-          _ProfileMenuTile(
-            icon: Icons.settings_outlined,
-            title: 'Settings',
-          ),
-          _ProfileMenuTile(
-            icon: Icons.logout,
-            title: 'Logout',
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _ProfileMenuTile extends StatelessWidget {
-  final IconData icon;
-  final String title;
-
-  const _ProfileMenuTile({
-    required this.icon,
-    required this.title,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 10),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(18),
-      ),
-      child: ListTile(
-        leading: Icon(
-          icon,
-          color: const Color(0xFF0877AC),
-        ),
-        title: Text(
-          title,
-          style: const TextStyle(
-            color: Color(0xFF064E7A),
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-        trailing: const Icon(
-          Icons.chevron_right,
-          color: Colors.grey,
-        ),
-        onTap: () {},
       ),
     );
   }
