@@ -686,7 +686,7 @@ class HomeScreen extends StatelessWidget {
 
                     const SizedBox(height: 18),
 
-                    const SuccessStoriesSection(),
+                    const FindYourProblemsSection(),
 
                     const SizedBox(height: 20),
                   ],
@@ -821,7 +821,7 @@ class HeroBanner extends StatelessWidget {
         borderRadius: BorderRadius.circular(25),
         image: const DecorationImage(
           image: AssetImage(
-            'assets/shrimp_hero.jpg',
+            'assets/hero_shrimp.jpg',
           ),
           fit: BoxFit.cover,
         ),
@@ -904,99 +904,106 @@ class HeroBanner extends StatelessWidget {
 class QuickActions extends StatelessWidget {
   const QuickActions({super.key});
 
-  static const List<Map<String, String>> cards = [
-    {
-      'image': 'assets/products/card1.png',
-      'title': 'రొయ్యల సాగు గైడ్',
-    },
-    {
-      'image': 'assets/products/card2.png',
-      'title': 'బయోమాస్ కాలిక్యులేటర్',
-    },
-    {
-      'image': 'assets/products/card3.png',
-      'title': 'రొయ్యల వ్యాధులు',
-    },
-    {
-      'image': 'assets/products/card4.png',
-      'title': 'టిప్ ఆఫ్ ది డే',
-    },
-  ];
+  @override
+  Widget build(BuildContext context) {
+    return GridView.count(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      crossAxisCount: 2,
+      crossAxisSpacing: 12,
+      mainAxisSpacing: 12,
+      childAspectRatio: 1.05,
+      children: const [
+        HomeCard(
+          image: 'assets/products/card1.png',
+          title: 'రొయ్యల సాగు గైడ్',
+        ),
+        HomeCard(
+          image: 'assets/products/card2.png',
+          title: 'బయోమాస్ కాలిక్యులేటర్',
+        ),
+        HomeCard(
+          image: 'assets/products/card3.png',
+          title: 'రొయ్యల వ్యాధులు',
+        ),
+        HomeCard(
+          image: 'assets/products/card4.png',
+          title: 'టిప్ ఆఫ్ ది డే',
+        ),
+      ],
+    );
+  }
+}
+
+class HomeCard extends StatelessWidget {
+  final String image;
+  final String title;
+
+  const HomeCard({
+    super.key,
+    required this.image,
+    required this.title,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return GridView.builder(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      itemCount: cards.length,
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        crossAxisSpacing: 12,
-        mainAxisSpacing: 12,
-        childAspectRatio: 0.82,
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(22),
+        border: Border.all(
+          color: const Color(0xFFE0EEF5),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 8,
+            offset: const Offset(0, 3),
+          ),
+        ],
       ),
-      itemBuilder: (context, index) {
-        final card = cards[index];
-
-        return Container(
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(22),
-            border: Border.all(
-              color: const Color(0xFFE0EEF5),
+      clipBehavior: Clip.antiAlias,
+      child: Column(
+        children: [
+          Expanded(
+            flex: 7,
+            child: Image.asset(
+              image,
+              width: double.infinity,
+              fit: BoxFit.cover,
+              errorBuilder: (_, __, ___) {
+                return const Center(
+                  child: Icon(
+                    Icons.image_not_supported_outlined,
+                    size: 42,
+                    color: Color(0xFF0B79B2),
+                  ),
+                );
+              },
             ),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.05),
-                blurRadius: 8,
-                offset: const Offset(0, 3),
-              ),
-            ],
           ),
-          clipBehavior: Clip.antiAlias,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(
-                flex: 7,
-                child: SizedBox(
-                  width: double.infinity,
-                  child: Image.asset(
-                    card['image']!,
-                    fit: BoxFit.cover,
-                    errorBuilder: (_, __, ___) {
-                      return const Center(
-                        child: Icon(
-                          Icons.image_not_supported_outlined,
-                          size: 45,
-                          color: Color(0xFF087DB5),
-                        ),
-                      );
-                    },
+          Expanded(
+            flex: 3,
+            child: Center(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8),
+                child: Text(
+                  title,
+                  textAlign: TextAlign.center,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    color: Color(0xFF064E7A),
+                    fontSize: 16,
+                    fontWeight: FontWeight.w800,
+                    height: 1.15,
                   ),
                 ),
               ),
-              Expanded(
-                flex: 3,
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(12, 9, 10, 8),
-                  child: Text(
-                    card['title']!,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
-                      color: Color(0xFF064E7A),
-                      fontSize: 16,
-                      height: 1.2,
-                      fontWeight: FontWeight.w800,
-                    ),
-                  ),
-                ),
-              ),
-            ],
+            ),
           ),
-        );
-      },
+        ],
+      ),
     );
   }
 }
@@ -1507,7 +1514,7 @@ class HomeProductsSection extends StatelessWidget {
     {
       'name': 'Marine Vibrio Shield',
       'image':
-          'assets/products/marine vibrio shield.png',
+          'assets/products/Marine vibrio shield.png',
     },
     {
       'name': 'Marine Volt-X',
@@ -1857,7 +1864,7 @@ class ProductsScreen extends StatelessWidget {
     {
       'name': 'Marine Vibrio Shield',
       'image':
-          'assets/products/marine vibrio shield.png',
+          'assets/products/Marine vibrio shield.png',
     },
     {
       'name': 'Marine White Shield',
