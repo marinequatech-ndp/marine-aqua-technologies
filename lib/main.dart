@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:video_player/video_player.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -686,7 +685,7 @@ class HomeScreen extends StatelessWidget {
 
                     const SizedBox(height: 18),
 
-                    FindYourProblemsSection(),
+                    const SuccessStoriesSection(),
 
                     const SizedBox(height: 20),
                   ],
@@ -821,7 +820,7 @@ class HeroBanner extends StatelessWidget {
         borderRadius: BorderRadius.circular(25),
         image: const DecorationImage(
           image: AssetImage(
-            'assets/hero_shrimp.jpg',
+            'assets/shrimp_hero.jpg',
           ),
           fit: BoxFit.cover,
         ),
@@ -906,29 +905,46 @@ class QuickActions extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GridView.count(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      crossAxisCount: 2,
-      crossAxisSpacing: 12,
-      mainAxisSpacing: 12,
-      childAspectRatio: 1.05,
-      children: const [
-        HomeCard(
-          image: 'assets/products/card1.png',
-          title: 'రొయ్యల సాగు గైడ్',
+    return Column(
+      children: [
+        Row(
+          children: [
+            Expanded(
+              child: HomeCard(
+                image: 'assets/products/card1.png',
+                title: 'రొయ్యల సాగు గైడ్',
+                text: 'రొయ్యల సాగులో ముఖ్యమైన సూచనలు తెలుసుకోండి.',
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: HomeCard(
+                image: 'assets/products/card2.png',
+                title: 'బయోమాస్ కాలిక్యులేటర్',
+                text: 'మీ చెరువులో అంచనా బయోమాస్‌ను సులభంగా తెలుసుకోండి.',
+              ),
+            ),
+          ],
         ),
-        HomeCard(
-          image: 'assets/products/card2.png',
-          title: 'బయోమాస్ కాలిక్యులేటర్',
-        ),
-        HomeCard(
-          image: 'assets/products/card3.png',
-          title: 'రొయ్యల వ్యాధులు',
-        ),
-        HomeCard(
-          image: 'assets/products/card4.png',
-          title: 'టిప్ ఆఫ్ ది డే',
+        const SizedBox(height: 12),
+        Row(
+          children: [
+            Expanded(
+              child: HomeCard(
+                image: 'assets/products/card3.png',
+                title: 'రొయ్యల వ్యాధులు',
+                text: 'సాధారణ రొయ్యల వ్యాధులను గుర్తించి నివారించండి.',
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: HomeCard(
+                image: 'assets/products/card4.png',
+                title: 'టిప్ ఆఫ్ ది డే',
+                text: 'ప్రతి రోజు ఆక్వా సాగుకు ఉపయోగపడే ముఖ్యమైన టిప్స్.',
+              ),
+            ),
+          ],
         ),
       ],
     );
@@ -938,42 +954,48 @@ class QuickActions extends StatelessWidget {
 class HomeCard extends StatelessWidget {
   final String image;
   final String title;
+  final String text;
 
   const HomeCard({
     super.key,
     required this.image,
     required this.title,
+    required this.text,
   });
 
   @override
   Widget build(BuildContext context) {
     return Container(
+      height: 315,
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(22),
         border: Border.all(
-          color: const Color(0xFFE0EEF5),
+          color: const Color(0xFFE1EEF4),
         ),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.05),
-            blurRadius: 8,
-            offset: const Offset(0, 3),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
           ),
         ],
       ),
       clipBehavior: Clip.antiAlias,
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Expanded(
-            flex: 7,
+          SizedBox(
+            height: 175,
+            width: double.infinity,
             child: Image.asset(
               image,
-              width: double.infinity,
               fit: BoxFit.cover,
               errorBuilder: (_, __, ___) {
-                return const Center(
-                  child: Icon(
+                return Container(
+                  color: const Color(0xFFEAF7FC),
+                  alignment: Alignment.center,
+                  child: const Icon(
                     Icons.image_not_supported_outlined,
                     size: 42,
                     color: Color(0xFF0B79B2),
@@ -982,23 +1004,30 @@ class HomeCard extends StatelessWidget {
               },
             ),
           ),
-          Expanded(
-            flex: 3,
-            child: Center(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8),
-                child: Text(
-                  title,
-                  textAlign: TextAlign.center,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
-                    color: Color(0xFF064E7A),
-                    fontSize: 16,
-                    fontWeight: FontWeight.w800,
-                    height: 1.15,
-                  ),
-                ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 13, 12, 5),
+            child: Text(
+              title,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(
+                fontWeight: FontWeight.w800,
+                fontSize: 20,
+                height: 1.15,
+                color: Color(0xFF064E7A),
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 0, 12, 12),
+            child: Text(
+              text,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(
+                fontSize: 14,
+                height: 1.35,
+                color: Colors.black54,
               ),
             ),
           ),
@@ -1016,22 +1045,11 @@ class HomeCard extends StatelessWidget {
 class SuccessStoriesSection extends StatelessWidget {
   const SuccessStoriesSection({super.key});
 
-  static const List<Map<String, String>> videos = [
-    {
-      'title': 'Success Story 1',
-      'video': 'assets/success_stories/success_story_1.mp4',
-      'thumb': 'assets/success_stories/thumbs/story1.jpg',
-    },
-    {
-      'title': 'Success Story 2',
-      'video': 'assets/success_stories/success_story_2.mp4',
-      'thumb': 'assets/success_stories/thumbs/story2.jpg',
-    },
-    {
-      'title': 'Marine Aqua Story',
-      'video': 'assets/success_stories/success_story_3.mp4',
-      'thumb': 'assets/success_stories/thumbs/story3.jpg',
-    },
+  static const List<String> stories = [
+    'assets/success_stories/story1.jpg',
+    'assets/success_stories/story2.jpg',
+    'assets/success_stories/story3.jpg',
+    'assets/success_stories/story4.jpg',
   ];
 
   @override
@@ -1052,7 +1070,7 @@ class SuccessStoriesSection extends StatelessWidget {
               ),
             ),
             const Text(
-              'వీడియోస్ →',
+              'మరిన్ని చూడండి →',
               style: TextStyle(
                 color: Color(0xFF0877AC),
                 fontSize: 13,
@@ -1063,221 +1081,56 @@ class SuccessStoriesSection extends StatelessWidget {
         ),
         const SizedBox(height: 10),
         SizedBox(
-          height: 205,
+          height: 190,
           child: ListView.separated(
             scrollDirection: Axis.horizontal,
             physics: const BouncingScrollPhysics(),
-            itemCount: videos.length,
+            itemCount: stories.length,
             separatorBuilder: (_, __) => const SizedBox(width: 12),
             itemBuilder: (context, index) {
-              final item = videos[index];
-              return _SuccessVideoCard(
-                title: item['title']!,
-                videoPath: item['video']!,
-                thumbnailPath: item['thumb']!,
+              return Container(
+                width: 275,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(22),
+                  border: Border.all(
+                    color: const Color(0xFFE0EEF5),
+                  ),
+                ),
+                clipBehavior: Clip.antiAlias,
+                child: Image.asset(
+                  stories[index],
+                  fit: BoxFit.cover,
+                  errorBuilder: (_, __, ___) {
+                    return Container(
+                      color: const Color(0xFFEAF7FC),
+                      alignment: Alignment.center,
+                      child: const Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.photo_library_outlined,
+                            size: 48,
+                            color: Color(0xFF0B79B2),
+                          ),
+                          SizedBox(height: 8),
+                          Text(
+                            'Success Story',
+                            style: TextStyle(
+                              color: Color(0xFF075078),
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
               );
             },
           ),
         ),
       ],
-    );
-  }
-}
-
-class _SuccessVideoCard extends StatelessWidget {
-  final String title;
-  final String videoPath;
-  final String thumbnailPath;
-
-  const _SuccessVideoCard({
-    required this.title,
-    required this.videoPath,
-    required this.thumbnailPath,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (_) => VideoPlayerScreen(
-              title: title,
-              videoPath: videoPath,
-            ),
-          ),
-        );
-      },
-      child: Container(
-        width: 285,
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(22),
-          border: Border.all(
-            color: const Color(0xFFE0EEF5),
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.05),
-              blurRadius: 8,
-              offset: const Offset(0, 3),
-            ),
-          ],
-        ),
-        clipBehavior: Clip.antiAlias,
-        child: Column(
-          children: [
-            Expanded(
-              child: Stack(
-                fit: StackFit.expand,
-                children: [
-                  Image.asset(
-                    thumbnailPath,
-                    fit: BoxFit.cover,
-                  ),
-                  Container(
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                        colors: [
-                          Colors.transparent,
-                          Colors.black.withOpacity(0.35),
-                        ],
-                      ),
-                    ),
-                  ),
-                  Center(
-                    child: Container(
-                      width: 54,
-                      height: 54,
-                      decoration: const BoxDecoration(
-                        color: Colors.white,
-                        shape: BoxShape.circle,
-                      ),
-                      child: const Icon(
-                        Icons.play_arrow,
-                        size: 34,
-                        color: Color(0xFF075985),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 13,
-                vertical: 10,
-              ),
-              child: Row(
-                children: [
-                  const Icon(
-                    Icons.play_circle_outline,
-                    color: Color(0xFF087DB5),
-                    size: 21,
-                  ),
-                  const SizedBox(width: 7),
-                  Expanded(
-                    child: Text(
-                      title,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                        color: Color(0xFF075078),
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class VideoPlayerScreen extends StatefulWidget {
-  final String title;
-  final String videoPath;
-
-  const VideoPlayerScreen({
-    super.key,
-    required this.title,
-    required this.videoPath,
-  });
-
-  @override
-  State<VideoPlayerScreen> createState() => _VideoPlayerScreenState();
-}
-
-class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
-  late final VideoPlayerController _controller;
-  bool _ready = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = VideoPlayerController.asset(widget.videoPath)
-      ..initialize().then((_) {
-        if (!mounted) return;
-        setState(() => _ready = true);
-      });
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.black,
-      appBar: AppBar(
-        backgroundColor: Colors.black,
-        foregroundColor: Colors.white,
-        title: Text(widget.title),
-      ),
-      body: Center(
-        child: _ready
-            ? Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  AspectRatio(
-                    aspectRatio: _controller.value.aspectRatio,
-                    child: VideoPlayer(_controller),
-                  ),
-                  const SizedBox(height: 18),
-                  IconButton(
-                    onPressed: () {
-                      setState(() {
-                        if (_controller.value.isPlaying) {
-                          _controller.pause();
-                        } else {
-                          _controller.play();
-                        }
-                      });
-                    },
-                    iconSize: 52,
-                    color: Colors.white,
-                    icon: Icon(
-                      _controller.value.isPlaying
-                          ? Icons.pause_circle_filled
-                          : Icons.play_circle_fill,
-                    ),
-                  ),
-                ],
-              )
-            : const CircularProgressIndicator(
-                color: Colors.white,
-              ),
-      ),
     );
   }
 }
@@ -1514,7 +1367,7 @@ class HomeProductsSection extends StatelessWidget {
     {
       'name': 'Marine Vibrio Shield',
       'image':
-          'assets/products/Marine vibrio shield.png',
+          'assets/products/marine vibrio shield.png',
     },
     {
       'name': 'Marine Volt-X',
@@ -1864,7 +1717,7 @@ class ProductsScreen extends StatelessWidget {
     {
       'name': 'Marine Vibrio Shield',
       'image':
-          'assets/products/Marine vibrio shield.png',
+          'assets/products/marine vibrio shield.png',
     },
     {
       'name': 'Marine White Shield',
